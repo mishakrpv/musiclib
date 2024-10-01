@@ -1,16 +1,39 @@
 package main
 
 import (
-	"github.com/mishakrpv/musiclib/internal/pkg/app"
-	
+	"os"
+
+	"github.com/mishakrpv/musiclib/internal/app"
+
+	_ "github.com/joho/godotenv/autoload"
 	"go.uber.org/zap"
 )
 
 func main() {
-	app := app.NewApp()
+	configureLogging()
 
-	err := app.Run()
+	server := app.NewServer()
+
+	err := server.ListenAndServe()
 	if err != nil {
-		zap.L().Fatal("An error occured while starting application", zap.Error(err))
+		zap.L().Fatal("Cannot start server", zap.Error(err))
 	}
+}
+
+func configureLogging() {
+	var logger *zap.Logger
+
+	env := os.Getenv("ENV")
+
+	if env == "production" {
+		logger = zap.Must(zap.NewProduction())
+	} else {
+		logger = zap.Must(zap.NewDevelopment())
+	}
+
+	zap.ReplaceGlobals(logger)
+
+	defer logger.Sync()
+
+	zap.L().Info("Logging has been configured", zap.String("env", env))
 }
