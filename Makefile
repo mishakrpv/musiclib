@@ -4,10 +4,10 @@ build:
 	@echo "Building..."
 	
 	
-	@go build -o main cmd/api/main.go
+	@go build -o main cmd/musiclib-api/main.go
 
 run:
-	@go run cmd/api/main.go
+	@go run cmd/musiclib-api/main.go
 
 test:
 	@echo "Testing..."
