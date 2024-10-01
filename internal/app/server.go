@@ -8,7 +8,8 @@ import (
 	"time"
 
 	"github.com/mishakrpv/musiclib/internal/app/domain/song"
-	
+	"github.com/mishakrpv/musiclib/internal/app/infrastructure/data/gorm/postgres"
+
 	"go.uber.org/zap"
 )
 
@@ -26,7 +27,7 @@ func NewServer() *http.Server {
 	newServer := &Server{
 		port: port,
 
-		songRepo: nil,
+		songRepo: postgres.NewSongRepository(),
 	}
 
 	server := &http.Server{

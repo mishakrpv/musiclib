@@ -1,9 +1,9 @@
 package song
 
 type Repository interface {
-	CreateSong(song *Song) error
-	GetSong(group string, song string) (*Song, error)
-	GetAllSongs(predicate func(song *Song) bool) ([]Song, error)
-	UpdateSong(song *Song) error
-	DeleteSong(group string, song string) error
+	Create(song *Song) error
+	Get(group string, song string) (*Song, error)
+	FindMatching(predicate func(song *Song) bool) ([]Song, error)
+	Update(song *Song) error
+	Delete(group string, song string) error
 }
