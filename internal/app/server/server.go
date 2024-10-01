@@ -1,4 +1,4 @@
-package app
+package server
 
 import (
 	"fmt"
@@ -9,6 +9,7 @@ import (
 
 	"github.com/mishakrpv/musiclib/internal/app/domain/song"
 	"github.com/mishakrpv/musiclib/internal/app/infrastructure/data/gorm/postgres"
+	"github.com/mishakrpv/musiclib/internal/app/infrastructure/services/clients"
 
 	"go.uber.org/zap"
 )
@@ -17,7 +18,13 @@ type Server struct {
 	port int
 
 	songRepo song.Repository
+
+	musicInfoClient clients.MusicInfoClient
 }
+
+var (
+	musicInfoServiceBaseUrl = os.Getenv("MUSIC_INFO__URL")
+)
 
 func NewServer() *http.Server {
 	port, _ := strconv.Atoi(os.Getenv("PORT"))
@@ -28,6 +35,8 @@ func NewServer() *http.Server {
 		port: port,
 
 		songRepo: postgres.NewSongRepository(),
+
+		musicInfoClient: clients.NewHttpMusicInfoClient(musicInfoServiceBaseUrl),
 	}
 
 	server := &http.Server{

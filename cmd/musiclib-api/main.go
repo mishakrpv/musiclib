@@ -3,7 +3,7 @@ package main
 import (
 	"os"
 
-	"github.com/mishakrpv/musiclib/internal/app"
+	"github.com/mishakrpv/musiclib/internal/app/server"
 
 	_ "github.com/joho/godotenv/autoload"
 	"go.uber.org/zap"
@@ -12,7 +12,7 @@ import (
 func main() {
 	configureLogging()
 
-	server := app.NewServer()
+	server := server.NewServer()
 
 	err := server.ListenAndServe()
 	if err != nil {
