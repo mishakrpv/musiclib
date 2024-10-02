@@ -1,4 +1,11 @@
 services:
+  musicinfoapi:
+    build:
+      context: musicinfo-mock-api
+      dockerfile: ./Dockerfile
+    ports:
+      - "3256:3256"
+
   psql:
     image: postgres:latest
     environment:
