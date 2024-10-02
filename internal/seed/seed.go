@@ -4,7 +4,6 @@ import (
 	"github.com/mishakrpv/musiclib/internal/domain/song"
 
 	"github.com/google/uuid"
-	"go.uber.org/zap"
 	"gorm.io/gorm"
 )
 
@@ -12,14 +11,13 @@ type seed struct {
 	Run func(*gorm.DB) error
 }
 
-func Seed(db *gorm.DB) {
-	zap.L().Info("Start seeding")
+func Seed(db *gorm.DB) error {
 	for _, seed := range all() {
 		if err := seed.Run(db); err != nil {
-			zap.L().Error("An error occured seeding db", zap.Error(err))
+			return err
 		}
 	}
-	zap.L().Info("Db seeded")
+	return nil
 }
 
 func all() []seed {
