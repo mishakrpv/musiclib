@@ -53,8 +53,8 @@ func (repo *SongRepository) Create(song *song.Song) error {
 	return repo.db.Create(song).Error
 }
 
-func (repo *SongRepository) Delete(groupName string, songName string) error {
-	return repo.db.Delete(&song.Song{}).Error
+func (repo *SongRepository) Delete(id string) error {
+	return repo.db.Where("id= ?", id).Delete(&song.Song{}).Error
 }
 
 func (repo *SongRepository) FindMatching(predicate *song.Song) ([]*song.Song, error) {
@@ -63,9 +63,9 @@ func (repo *SongRepository) FindMatching(predicate *song.Song) ([]*song.Song, er
 	return songs, err
 }
 
-func (repo *SongRepository) Get(groupName string, songName string) (*song.Song, error) {
+func (repo *SongRepository) Get(id string) (*song.Song, error) {
 	var song = &song.Song{}
-	err := repo.db.First(&song, "group_name = ? AND song_name = ?", groupName, songName).Error
+	err := repo.db.First(&song, "id = ?", id).Error
 	return song, err
 }
 

@@ -8,7 +8,7 @@ import (
 	"github.com/mishakrpv/musiclib/internal/endpoint/query"
 
 	"github.com/gin-gonic/gin"
-	"github.com/webstradev/gin-pagination"
+	pagination "github.com/webstradev/gin-pagination"
 	"go.uber.org/zap"
 )
 
@@ -18,13 +18,13 @@ func (s *Server) RegisterRoutes() http.Handler {
 	api := r.Group("/api/v1")
 	{
 		paginator := pagination.New("page", "rowsPerPage", "1", "15", 5, 150)
-		
+
 		api.GET("/songs", paginator, s.SongsHandler)
-		api.GET("/groups/:group_name/songs/:song_name/lyrics/:verse_number", s.LyricsHandler)
+		api.GET("/songs/:song_id/lyrics", s.LyricsHandler)
 
-		api.DELETE("/groups/:group_name/songs/:song_name", s.DeleteSongHandler)
+		api.DELETE("/songs/:song_id", s.DeleteSongHandler)
 
-		api.PUT("/groups/:group_name/songs/:song_name", s.UpdateSongHandler)
+		api.PUT("/songs/:song_id", s.UpdateSongHandler)
 
 		api.POST("/songs", s.CreateSongHandler)
 	}
@@ -36,7 +36,6 @@ func (s *Server) SongsHandler(c *gin.Context) {
 	handler := query.NewHandler(s.songRepo)
 
 	filter := &query.Filter{}
-
 	if err := c.ShouldBindQuery(&filter); err != nil {
 		zap.L().Warn("Something went wrong while binding query", zap.Error(err))
 	}
@@ -65,7 +64,18 @@ func (s *Server) LyricsHandler(c *gin.Context) {
 }
 
 func (s *Server) DeleteSongHandler(c *gin.Context) {
-	c.JSON(http.StatusOK, "")
+
+	id := c.Param("song_id")
+
+	zap.L().Debug("Param bound", zap.String("id", id))
+
+	err := s.songRepo.Delete(id)
+	if err != nil {
+		// TODO: map error to proper status code
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	}
+
+	c.Status(http.StatusOK)
 }
 
 func (s *Server) UpdateSongHandler(c *gin.Context) {
@@ -76,7 +86,6 @@ func (s *Server) CreateSongHandler(c *gin.Context) {
 	handler := create.NewHandler(s.songRepo, s.musicInfoClient)
 
 	request := &create.Request{}
-
 	if err := c.ShouldBindJSON(&request); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
