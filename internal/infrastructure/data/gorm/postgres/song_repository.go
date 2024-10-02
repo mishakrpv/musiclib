@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/mishakrpv/musiclib/internal/app/domain/song"
+	"github.com/mishakrpv/musiclib/internal/domain/song"
 
 	"go.uber.org/zap"
 	"gorm.io/driver/postgres"

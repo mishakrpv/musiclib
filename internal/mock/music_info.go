@@ -1,6 +1,6 @@
 package mock
 
-import "github.com/mishakrpv/musiclib/internal/app/infrastructure/services/clients"
+import "github.com/mishakrpv/musiclib/internal/infrastructure/services/clients"
 
 type GoodMusicInfoClient struct {
 }

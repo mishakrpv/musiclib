@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/mishakrpv/musiclib/internal/app/server"
+	"github.com/mishakrpv/musiclib/internal/server"
 
 	_ "github.com/joho/godotenv/autoload"
 	"go.uber.org/zap"

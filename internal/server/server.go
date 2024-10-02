@@ -7,9 +7,9 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/mishakrpv/musiclib/internal/app/domain/song"
-	"github.com/mishakrpv/musiclib/internal/app/infrastructure/data/gorm/postgres"
-	"github.com/mishakrpv/musiclib/internal/app/infrastructure/services/clients"
+	"github.com/mishakrpv/musiclib/internal/domain/song"
+	"github.com/mishakrpv/musiclib/internal/infrastructure/data/gorm/postgres"
+	"github.com/mishakrpv/musiclib/internal/infrastructure/services/clients"
 
 	"go.uber.org/zap"
 )

@@ -7,8 +7,8 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/mishakrpv/musiclib/internal/app/endpoint/commands/song/create"
-	"github.com/mishakrpv/musiclib/internal/app/mock"
+	"github.com/mishakrpv/musiclib/internal/endpoint/commands/song/create"
+	"github.com/mishakrpv/musiclib/internal/mock"
 
 	"github.com/gin-gonic/gin"
 )

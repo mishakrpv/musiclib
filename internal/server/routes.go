@@ -4,7 +4,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/mishakrpv/musiclib/internal/app/endpoint/commands/song/create"
+	"github.com/mishakrpv/musiclib/internal/endpoint/commands/song/create"
 	"go.uber.org/zap"
 )
 
