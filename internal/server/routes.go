@@ -2,9 +2,11 @@ package server
 
 import (
 	"net/http"
+	"net/url"
 
 	"github.com/gin-gonic/gin"
 	"github.com/mishakrpv/musiclib/internal/endpoint/commands/song/create"
+	"github.com/mishakrpv/musiclib/internal/endpoint/query"
 	"go.uber.org/zap"
 )
 
@@ -27,7 +29,31 @@ func (s *Server) RegisterRoutes() http.Handler {
 }
 
 func (s *Server) SongsHandler(c *gin.Context) {
-	c.JSON(http.StatusOK, "")
+	handler := query.NewHandler(s.songRepo)
+	
+	filter := &query.Filter{}
+
+	if err := c.ShouldBindQuery(&filter); err != nil {
+		zap.L().Warn("Something went wrong while binding query", zap.Error(err))
+	}
+
+	zap.L().Debug("Query bound",
+		zap.String("group", filter.GroupName),
+		zap.String("song", filter.SongName),
+		zap.String("date", filter.ReleaseDate),
+		zap.String("text", filter.Text),
+		zap.String("link", filter.Link))
+
+	filter.Link, _ = url.QueryUnescape(filter.Link)
+	zap.L().Debug("Decode query link", zap.String("link", filter.Link))
+
+	response, err := handler.Execute(filter)
+	if err != nil {
+		// TODO: map error to proper status code
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	}
+
+	c.JSON(http.StatusOK, &response)
 }
 
 func (s *Server) LyricsHandler(c *gin.Context) {
@@ -52,7 +78,7 @@ func (s *Server) CreateSongHandler(c *gin.Context) {
 		return
 	}
 
-	zap.L().Debug("Body binded",
+	zap.L().Debug("Body bound",
 		zap.String("group", request.Group),
 		zap.String("song", request.Song))
 
