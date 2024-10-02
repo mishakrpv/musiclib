@@ -70,5 +70,5 @@ func (repo *SongRepository) Get(id string) (*song.Song, error) {
 }
 
 func (repo *SongRepository) Update(song *song.Song) error {
-	return repo.db.Save(&song).Error
+	return repo.db.Model(&song).Updates(*song).Error
 }

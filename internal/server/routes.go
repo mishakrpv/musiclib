@@ -4,7 +4,10 @@ import (
 	"net/http"
 	"net/url"
 
+	"github.com/google/uuid"
+	"github.com/mishakrpv/musiclib/internal/domain/song"
 	"github.com/mishakrpv/musiclib/internal/endpoint/commands/song/create"
+	"github.com/mishakrpv/musiclib/internal/endpoint/commands/song/update"
 	"github.com/mishakrpv/musiclib/internal/endpoint/query"
 
 	"github.com/gin-gonic/gin"
@@ -79,7 +82,31 @@ func (s *Server) DeleteSongHandler(c *gin.Context) {
 }
 
 func (s *Server) UpdateSongHandler(c *gin.Context) {
-	c.JSON(http.StatusOK, "")
+	songId := c.Param("song_id")
+
+	zap.L().Debug("Param bound", zap.String("id", songId))
+
+	request := &update.Request{}
+	if err := c.ShouldBindJSON(&request); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	id, err := uuid.Parse(songId)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "incorrect song id"})
+	}
+
+	s.songRepo.Update(&song.Song{
+		Id:          id,
+		GroupName:   request.GroupName,
+		SongName:    request.SongName,
+		ReleaseDate: request.ReleaseDate,
+		Text:        request.Text,
+		Link:        request.Link,
+	})
+
+	c.Status(http.StatusOK)
 }
 
 func (s *Server) CreateSongHandler(c *gin.Context) {
