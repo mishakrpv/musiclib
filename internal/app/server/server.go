@@ -52,3 +52,21 @@ func NewServer() *http.Server {
 
 	return server
 }
+
+func ConfigureLogging() {
+	var logger *zap.Logger
+
+	env := os.Getenv("ENV")
+
+	if env == "production" {
+		logger = zap.Must(zap.NewProduction())
+	} else {
+		logger = zap.Must(zap.NewDevelopment())
+	}
+
+	zap.ReplaceGlobals(logger)
+
+	defer logger.Sync()
+
+	zap.L().Info("Logging has been configured", zap.String("env", env))
+}

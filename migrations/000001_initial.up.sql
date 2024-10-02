@@ -4,7 +4,7 @@ CREATE TABLE IF NOT EXISTS songs (
     id VARCHAR(255) PRIMARY KEY,
     group_name VARCHAR(255) NOT NULL,
     song_name VARCHAR(255) NOT NULL,
-    release_date DATE,
+    release_date VARCHAR(10),
     text TEXT,
     link VARCHAR(500)
 );
