@@ -7,17 +7,17 @@ import (
 	"github.com/mishakrpv/musiclib/internal/apperror"
 )
 
-type LyricsHandler struct {
+type LyricsQuery struct {
 	songRepo song.Repository
 }
 
-func NewLyricsHandler(songRepo song.Repository) *LyricsHandler {
-	return &LyricsHandler{
+func NewLyricsQuery(songRepo song.Repository) *LyricsQuery {
+	return &LyricsQuery{
 		songRepo: songRepo,
 	}
 }
 
-func (h *LyricsHandler) Execute(id string, page int) (*string, error) {
+func (h *LyricsQuery) Execute(id string, page int) (*string, error) {
 	song, err := h.songRepo.Get(id)
 	if err != nil {
 		return nil, apperror.ErrSongNotFound

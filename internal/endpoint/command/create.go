@@ -16,18 +16,17 @@ type CreateResponse struct {
 	Song *song.Song
 }
 
-
-type CreateHandler struct {
+type CreateCommand struct {
 	songRepo        song.Repository
 	musicInfoClient services.MusicInfoClient
 }
 
-func NewCreateHandler(repo song.Repository,
-	musicInfoClient services.MusicInfoClient) *CreateHandler {
-	return &CreateHandler{songRepo: repo, musicInfoClient: musicInfoClient}
+func NewCreateCommand(repo song.Repository,
+	musicInfoClient services.MusicInfoClient) *CreateCommand {
+	return &CreateCommand{songRepo: repo, musicInfoClient: musicInfoClient}
 }
 
-func (h *CreateHandler) Execute(request *CreateRequest) (*CreateResponse, error) {
+func (h *CreateCommand) Execute(request *CreateRequest) (*CreateResponse, error) {
 	songDetail, err := h.musicInfoClient.GetSongDetail(request.Group, request.Song)
 	if err != nil {
 		zap.L().Error("An error occured getting SongDetail", zap.Error(err))

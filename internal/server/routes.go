@@ -38,7 +38,7 @@ func (s *Server) RegisterRoutes() http.Handler {
 }
 
 func (s *Server) SongsHandler(c *gin.Context) {
-	handler := query.NewSongsHandler(s.songRepo)
+	qr := query.NewSongsQuery(s.songRepo)
 
 	filter := &query.Filter{}
 	if err := c.ShouldBindQuery(&filter); err != nil {
@@ -63,7 +63,7 @@ func (s *Server) SongsHandler(c *gin.Context) {
 	filter.Link, _ = url.QueryUnescape(filter.Link)
 	zap.L().Debug("Decode query link", zap.String("link", filter.Link))
 
-	response, err := handler.Execute(filter)
+	response, err := qr.Execute(filter)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -82,13 +82,13 @@ func (s *Server) SongsHandler(c *gin.Context) {
 }
 
 func (s *Server) LyricsHandler(c *gin.Context) {
-	handler := query.NewLyricsHandler(s.songRepo)
+	query := query.NewLyricsQuery(s.songRepo)
 
 	id := c.Param("song_id")
 	page := c.GetInt("page")
 	zap.L().Debug("Params bound", zap.String("id", id), zap.Int("page", page))
 
-	verse, err := handler.Execute(id, page)
+	verse, err := query.Execute(id, page)
 	if err != nil {
 		var status int = http.StatusInternalServerError
 		if errors.Is(err, apperror.ErrVerseNotFound) || errors.Is(err, apperror.ErrSongNotFound) {
@@ -149,7 +149,7 @@ func (s *Server) UpdateSongHandler(c *gin.Context) {
 }
 
 func (s *Server) CreateSongHandler(c *gin.Context) {
-	handler := command.NewCreateHandler(s.songRepo, s.musicInfoClient)
+	cmd := command.NewCreateCommand(s.songRepo, s.musicInfoClient)
 
 	request := &command.CreateRequest{}
 	if err := c.ShouldBindJSON(&request); err != nil {
@@ -161,7 +161,7 @@ func (s *Server) CreateSongHandler(c *gin.Context) {
 		zap.String("group", request.Group),
 		zap.String("song", request.Song))
 
-	response, err := handler.Execute(request)
+	response, err := cmd.Execute(request)
 	if err != nil {
 		var status = http.StatusInternalServerError
 		if errors.Is(err, apperror.ErrSongNotFound) {
