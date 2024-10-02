@@ -1,6 +1,6 @@
-package update
+package command
 
-type Request struct {
+type UpdateRequest struct {
 	GroupName   string `json:"group" binding:"required"`
 	SongName    string `json:"song" binding:"required"`
 	ReleaseDate string `json:"release_date"`

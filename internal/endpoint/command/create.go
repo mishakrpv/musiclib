@@ -1,4 +1,4 @@
-package create
+package command
 
 import (
 	"github.com/mishakrpv/musiclib/internal/domain/song"
@@ -7,17 +7,27 @@ import (
 	"go.uber.org/zap"
 )
 
-type Handler struct {
+type CreateRequest struct {
+	Group string `json:"group" binding:"required"`
+	Song  string `json:"song" binding:"required"`
+}
+
+type CreateResponse struct {
+	Song *song.Song
+}
+
+
+type CreateHandler struct {
 	songRepo        song.Repository
 	musicInfoClient services.MusicInfoClient
 }
 
-func NewHandler(repo song.Repository,
-	musicInfoClient services.MusicInfoClient) *Handler {
-	return &Handler{songRepo: repo, musicInfoClient: musicInfoClient}
+func NewCreateHandler(repo song.Repository,
+	musicInfoClient services.MusicInfoClient) *CreateHandler {
+	return &CreateHandler{songRepo: repo, musicInfoClient: musicInfoClient}
 }
 
-func (h *Handler) Execute(request *Request) (*Response, error) {
+func (h *CreateHandler) Execute(request *CreateRequest) (*CreateResponse, error) {
 	songDetail, err := h.musicInfoClient.GetSongDetail(request.Group, request.Song)
 	if err != nil {
 		zap.L().Error("An error occured getting SongDetail", zap.Error(err))
@@ -33,5 +43,5 @@ func (h *Handler) Execute(request *Request) (*Response, error) {
 		return nil, err
 	}
 
-	return &Response{Song: song}, nil
+	return &CreateResponse{Song: song}, nil
 }

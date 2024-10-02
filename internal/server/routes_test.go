@@ -7,7 +7,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/mishakrpv/musiclib/internal/endpoint/command/song/create"
+	"github.com/mishakrpv/musiclib/internal/endpoint/command"
 	"github.com/mishakrpv/musiclib/internal/mock"
 
 	"github.com/gin-gonic/gin"
@@ -37,7 +37,7 @@ func TestCreateSongHandler(t *testing.T) {
 		t.Logf("Start running test: %s", test.name)
 		t.Run(test.name, func(t *testing.T) {
 			// Arrange
-			request := &create.Request{
+			request := &command.CreateRequest{
 				Group: test.group,
 				Song:  test.song,
 			}

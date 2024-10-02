@@ -7,8 +7,7 @@ import (
 	"net/url"
 
 	"github.com/mishakrpv/musiclib/internal/domain/song"
-	"github.com/mishakrpv/musiclib/internal/endpoint/command/song/create"
-	"github.com/mishakrpv/musiclib/internal/endpoint/command/song/update"
+	"github.com/mishakrpv/musiclib/internal/endpoint/command"
 	"github.com/mishakrpv/musiclib/internal/endpoint/query"
 	"github.com/mishakrpv/musiclib/internal/apperror"
 
@@ -121,7 +120,7 @@ func (s *Server) UpdateSongHandler(c *gin.Context) {
 
 	zap.L().Debug("Param bound", zap.String("id", songId))
 
-	request := &update.Request{}
+	request := &command.UpdateRequest{}
 	if err := c.ShouldBindJSON(&request); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -150,9 +149,9 @@ func (s *Server) UpdateSongHandler(c *gin.Context) {
 }
 
 func (s *Server) CreateSongHandler(c *gin.Context) {
-	handler := create.NewHandler(s.songRepo, s.musicInfoClient)
+	handler := command.NewCreateHandler(s.songRepo, s.musicInfoClient)
 
-	request := &create.Request{}
+	request := &command.CreateRequest{}
 	if err := c.ShouldBindJSON(&request); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
