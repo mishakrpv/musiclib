@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"github.com/mishakrpv/musiclib/internal/domain/song"
-	"github.com/mishakrpv/musiclib/internal/infrastructure/data/gorm/postgres"
+	"github.com/mishakrpv/musiclib/internal/infrastructure/data/gorm"
 	"github.com/mishakrpv/musiclib/internal/infrastructure/services/clients"
 
 	"go.uber.org/zap"
@@ -37,7 +37,7 @@ func NewServer() *http.Server {
 	newServer := &Server{
 		port: port,
 
-		songRepo: postgres.NewSongRepository(),
+		songRepo: gorm.NewSongRepository(),
 
 		musicInfoClient: clients.NewHttpMusicInfoClient(musicInfoServiceBaseUrl),
 	}

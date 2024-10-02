@@ -10,7 +10,6 @@ import (
 	"github.com/mishakrpv/musiclib/internal/endpoint/commands/song/create"
 	"github.com/mishakrpv/musiclib/internal/endpoint/commands/song/update"
 	"github.com/mishakrpv/musiclib/internal/endpoint/query"
-	"github.com/mishakrpv/musiclib/internal/endpoint/query/lyrics"
 
 	"github.com/gin-gonic/gin"
 	pagination "github.com/webstradev/gin-pagination"
@@ -22,7 +21,7 @@ func (s *Server) RegisterRoutes() http.Handler {
 
 	api := r.Group("/api/v1")
 	{
-		paginator := pagination.New("page", "rowsPerPage", "1", "15", 5, 150)
+		paginator := pagination.New("page", "songs", "1", "3", 3, 150)
 
 		api.GET("/songs", paginator, s.SongsHandler)
 		api.GET("/songs/:song_id/lyrics", paginator, s.LyricsHandler)
@@ -38,19 +37,25 @@ func (s *Server) RegisterRoutes() http.Handler {
 }
 
 func (s *Server) SongsHandler(c *gin.Context) {
-	handler := query.NewHandler(s.songRepo)
+	handler := query.NewSongsHandler(s.songRepo)
 
 	filter := &query.Filter{}
 	if err := c.ShouldBindQuery(&filter); err != nil {
 		zap.L().Warn("Something went wrong while binding query", zap.Error(err))
 	}
 
+	page := c.GetInt("page")
+	amount := c.GetInt("songs")
+	amount--
+	page--
+
 	zap.L().Debug("Query bound",
 		zap.String("group", filter.GroupName),
 		zap.String("song", filter.SongName),
 		zap.String("date", filter.ReleaseDate),
 		zap.String("text", filter.Text),
-		zap.String("link", filter.Link))
+		zap.String("link", filter.Link),
+		zap.Int("page", page))
 
 	filter.Link, _ = url.QueryUnescape(filter.Link)
 	zap.L().Debug("Decode query link", zap.String("link", filter.Link))
@@ -61,11 +66,20 @@ func (s *Server) SongsHandler(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 	}
 
-	c.JSON(http.StatusOK, &response)
+	response = response[page*amount:(page+1)*amount]
+
+	res := make([]interface{}, 0, len(response))
+	for _, item := range response {
+		if item != nil {
+			res = append(res, item)
+		}
+	}
+
+	c.JSON(http.StatusOK, &res)
 }
 
 func (s *Server) LyricsHandler(c *gin.Context) {
-	handler := lyrics.NewHandler(s.songRepo)
+	handler := query.NewLyricsHandler(s.songRepo)
 
 	id := c.Param("song_id")
 	page := c.GetInt("page")
@@ -81,7 +95,6 @@ func (s *Server) LyricsHandler(c *gin.Context) {
 }
 
 func (s *Server) DeleteSongHandler(c *gin.Context) {
-
 	id := c.Param("song_id")
 
 	zap.L().Debug("Param bound", zap.String("id", id))

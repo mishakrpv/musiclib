@@ -10,17 +10,17 @@ type Filter struct {
 	Link        string `form:"link"`
 }
 
-type Handler struct {
+type SongsHandler struct {
 	songRepo song.Repository
 }
 
-func NewHandler(songRepo song.Repository) *Handler {
-	return &Handler{
+func NewSongsHandler(songRepo song.Repository) *SongsHandler {
+	return &SongsHandler{
 		songRepo: songRepo,
 	}
 }
 
-func (h *Handler) Execute(filter *Filter) ([]*song.Song, error) {
+func (h *SongsHandler) Execute(filter *Filter) ([]*song.Song, error) {
 	predicate := &song.Song{
 		GroupName: filter.GroupName,
 		SongName: filter.SongName,

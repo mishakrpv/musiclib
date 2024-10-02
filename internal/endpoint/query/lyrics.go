@@ -1,4 +1,4 @@
-package lyrics
+package query
 
 import (
 	"errors"
@@ -7,17 +7,17 @@ import (
 	"github.com/mishakrpv/musiclib/internal/domain/song"
 )
 
-type Handler struct {
+type LyricsHandler struct {
 	songRepo song.Repository
 }
 
-func NewHandler(songRepo song.Repository) *Handler {
-	return &Handler{
+func NewLyricsHandler(songRepo song.Repository) *LyricsHandler {
+	return &LyricsHandler{
 		songRepo: songRepo,
 	}
 }
 
-func (h *Handler) Execute(id string, page int) (*string, error) {
+func (h *LyricsHandler) Execute(id string, page int) (*string, error) {
 	song, err := h.songRepo.Get(id)
 	if err != nil {
 		return nil, err
