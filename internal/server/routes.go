@@ -1,6 +1,7 @@
 package server
 
 import (
+	"fmt"
 	"net/http"
 	"net/url"
 
@@ -9,6 +10,7 @@ import (
 	"github.com/mishakrpv/musiclib/internal/endpoint/commands/song/create"
 	"github.com/mishakrpv/musiclib/internal/endpoint/commands/song/update"
 	"github.com/mishakrpv/musiclib/internal/endpoint/query"
+	"github.com/mishakrpv/musiclib/internal/endpoint/query/lyrics"
 
 	"github.com/gin-gonic/gin"
 	pagination "github.com/webstradev/gin-pagination"
@@ -23,7 +25,7 @@ func (s *Server) RegisterRoutes() http.Handler {
 		paginator := pagination.New("page", "rowsPerPage", "1", "15", 5, 150)
 
 		api.GET("/songs", paginator, s.SongsHandler)
-		api.GET("/songs/:song_id/lyrics", s.LyricsHandler)
+		api.GET("/songs/:song_id/lyrics", paginator, s.LyricsHandler)
 
 		api.DELETE("/songs/:song_id", s.DeleteSongHandler)
 
@@ -63,7 +65,19 @@ func (s *Server) SongsHandler(c *gin.Context) {
 }
 
 func (s *Server) LyricsHandler(c *gin.Context) {
-	c.JSON(http.StatusOK, "")
+	handler := lyrics.NewHandler(s.songRepo)
+
+	id := c.Param("song_id")
+	page := c.GetInt("page")
+	zap.L().Debug("Params bound", zap.String("id", id), zap.Int("page", page))
+
+	verse, err := handler.Execute(id, page)
+	if err != nil {
+		// TODO: map error to proper status code
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	}
+
+	c.JSON(http.StatusOK, gin.H{fmt.Sprintf("verse number %d:", page): *verse})
 }
 
 func (s *Server) DeleteSongHandler(c *gin.Context) {
