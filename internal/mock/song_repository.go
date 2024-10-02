@@ -14,10 +14,10 @@ func (s *SongRepository) Create(song *song.Song) error {
 }
 
 func (s *SongRepository) Delete(group string, song string) error {
-	return nil
+	panic("unimplemented")
 }
 
-func (s *SongRepository) FindMatching(predicate func(song *song.Song) bool) ([]song.Song, error) {
+func (s *SongRepository) FindMatching(predicate *song.Song) ([]*song.Song, error) {
 	panic("unimplemented")
 }
 

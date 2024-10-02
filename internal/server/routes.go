@@ -4,9 +4,11 @@ import (
 	"net/http"
 	"net/url"
 
-	"github.com/gin-gonic/gin"
 	"github.com/mishakrpv/musiclib/internal/endpoint/commands/song/create"
 	"github.com/mishakrpv/musiclib/internal/endpoint/query"
+
+	"github.com/gin-gonic/gin"
+	"github.com/webstradev/gin-pagination"
 	"go.uber.org/zap"
 )
 
@@ -15,7 +17,9 @@ func (s *Server) RegisterRoutes() http.Handler {
 
 	api := r.Group("/api/v1")
 	{
-		api.GET("/songs", s.SongsHandler)
+		paginator := pagination.New("page", "rowsPerPage", "1", "15", 5, 150)
+		
+		api.GET("/songs", paginator, s.SongsHandler)
 		api.GET("/groups/:group_name/songs/:song_name/lyrics/:verse_number", s.LyricsHandler)
 
 		api.DELETE("/groups/:group_name/songs/:song_name", s.DeleteSongHandler)
@@ -30,7 +34,7 @@ func (s *Server) RegisterRoutes() http.Handler {
 
 func (s *Server) SongsHandler(c *gin.Context) {
 	handler := query.NewHandler(s.songRepo)
-	
+
 	filter := &query.Filter{}
 
 	if err := c.ShouldBindQuery(&filter); err != nil {

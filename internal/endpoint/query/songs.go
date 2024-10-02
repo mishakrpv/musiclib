@@ -20,28 +20,14 @@ func NewHandler(songRepo song.Repository) *Handler {
 	}
 }
 
-func (h *Handler) Execute(filter *Filter) ([]song.Song, error) {
-	return h.songRepo.FindMatching(func(song *song.Song) bool {
-		if filter.GroupName != "" && song.GroupName != filter.GroupName {
-			return false
-		}
+func (h *Handler) Execute(filter *Filter) ([]*song.Song, error) {
+	predicate := &song.Song{
+		GroupName: filter.GroupName,
+		SongName: filter.SongName,
+		ReleaseDate: filter.ReleaseDate,
+		Text: filter.Text,
+		Link: filter.Link,
+	}
 
-		if filter.SongName != "" && song.SongName != filter.SongName {
-			return false
-		}
-
-		if filter.ReleaseDate != "" && song.ReleaseDate != filter.ReleaseDate {
-			return false
-		}
-
-		if filter.Text != "" && song.Text != filter.Text {
-			return false
-		}
-
-		if filter.Link != "" && song.Link != filter.Link {
-			return false
-		}
-
-		return true
-	})
+	return h.songRepo.FindMatching(predicate)
 }

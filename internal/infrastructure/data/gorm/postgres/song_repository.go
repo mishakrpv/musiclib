@@ -57,8 +57,10 @@ func (repo *SongRepository) Delete(group string, song string) error {
 	panic("unimplemented")
 }
 
-func (repo *SongRepository) FindMatching(predicate func(song *song.Song) bool) ([]song.Song, error) {
-	panic("unimplemented")
+func (repo *SongRepository) FindMatching(predicate *song.Song) ([]*song.Song, error) {
+	var songs []*song.Song
+	err := repo.db.Where(*predicate).Find(&songs).Error
+	return songs, err
 }
 
 func (repo *SongRepository) Get(group string, song string) (*song.Song, error) {
