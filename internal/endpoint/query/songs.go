@@ -3,7 +3,7 @@ package query
 import "github.com/mishakrpv/musiclib/internal/domain/song"
 
 type Filter struct {
-	GroupName   string `form:"froup"`
+	GroupName   string `form:"group"`
 	SongName    string `form:"song"`
 	ReleaseDate string `form:"date"`
 	Text        string `form:"text"`
