@@ -12,11 +12,11 @@ import (
 )
 
 var (
-	database = os.Getenv("DB_DATABASE")
-	password = os.Getenv("DB_PASSWORD")
-	user     = os.Getenv("DB_USER")
-	port     = os.Getenv("DB_PORT")
 	host     = os.Getenv("DB_HOST")
+	user     = os.Getenv("DB_USER")
+	password = os.Getenv("DB_PASSWORD")
+	database = os.Getenv("DB_DATABASE")
+	port     = os.Getenv("DB_PORT")
 )
 
 type SongRepository struct {
@@ -37,27 +37,34 @@ func NewSongRepository() song.Repository {
 
 	zap.L().Info("Database connection has been opened", zap.String("dsn", dsn))
 
+	zap.L().Info("Start migrating")
+	err = Migrate(db)
+	if err != nil {
+		zap.L().Fatal("An error occured migrating database", zap.Error(err))
+	}
+	zap.L().Info("Db migrated")
+
 	return &SongRepository{
 		db: db,
 	}
 }
 
-func (s *SongRepository) Create(song *song.Song) error {
+func (repo *SongRepository) Create(song *song.Song) error {
+	return repo.db.Create(song).Error
+}
+
+func (repo *SongRepository) Delete(group string, song string) error {
 	panic("unimplemented")
 }
 
-func (s *SongRepository) Delete(group string, song string) error {
+func (repo *SongRepository) FindMatching(predicate func(song *song.Song) bool) ([]song.Song, error) {
 	panic("unimplemented")
 }
 
-func (s *SongRepository) FindMatching(predicate func(song *song.Song) bool) ([]song.Song, error) {
+func (repo *SongRepository) Get(group string, song string) (*song.Song, error) {
 	panic("unimplemented")
 }
 
-func (s *SongRepository) Get(group string, song string) (*song.Song, error) {
-	panic("unimplemented")
-}
-
-func (s *SongRepository) Update(song *song.Song) error {
+func (repo *SongRepository) Update(song *song.Song) error {
 	panic("unimplemented")
 }

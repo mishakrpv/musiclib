@@ -1,5 +1,0 @@
-BEGIN;
-
-DROP TABLE song;
-
-END;

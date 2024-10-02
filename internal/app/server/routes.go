@@ -5,6 +5,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/mishakrpv/musiclib/internal/app/endpoint/commands/song/create"
+	"go.uber.org/zap"
 )
 
 func (s *Server) RegisterRoutes() http.Handler {
@@ -26,22 +27,7 @@ func (s *Server) RegisterRoutes() http.Handler {
 }
 
 func (s *Server) SongsHandler(c *gin.Context) {
-	handler := create.NewHandler(s.songRepo, s.musicInfoClient)
-
-	request := &create.Request{}
-
-	if err := c.ShouldBindJSON(&request); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	response, err := handler.Execute(request)
-	if err != nil {
-		// TODO: map error to proper status code
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-	}
-
-	c.JSON(http.StatusOK, &response)
+	c.JSON(http.StatusOK, "")
 }
 
 func (s *Server) LyricsHandler(c *gin.Context) {
@@ -57,5 +43,24 @@ func (s *Server) UpdateSongHandler(c *gin.Context) {
 }
 
 func (s *Server) CreateSongHandler(c *gin.Context) {
-	c.JSON(http.StatusOK, "")
+	handler := create.NewHandler(s.songRepo, s.musicInfoClient)
+
+	request := &create.Request{}
+
+	if err := c.ShouldBindJSON(&request); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	zap.L().Debug("Body binded",
+		zap.String("group", request.Group),
+		zap.String("song", request.Song))
+
+	response, err := handler.Execute(request)
+	if err != nil {
+		// TODO: map error to proper status code
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	}
+
+	c.JSON(http.StatusOK, &response)
 }

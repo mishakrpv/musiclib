@@ -18,12 +18,16 @@ func NewHandler(repo song.Repository,
 }
 
 func (h *Handler) Execute(request *Request) (*Response, error) {
-	songDetail, _ := h.musicInfoClient.GetSongDetail(request.Group, request.Song)
+	songDetail, err := h.musicInfoClient.GetSongDetail(request.Group, request.Song)
+	if err != nil {
+		zap.L().Error("An error occured getting SongDetail", zap.Error(err))
+		return nil, err
+	}
 
 	song := song.NewSong(request.Group, request.Song,
 		songDetail.ReleaseDate, songDetail.Text, songDetail.Link)
 
-	err := h.songRepo.Create(song)
+	err = h.songRepo.Create(song)
 	if err != nil {
 		zap.L().Error("An error occured creating song", zap.Error(err))
 		return nil, err

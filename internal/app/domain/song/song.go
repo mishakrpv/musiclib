@@ -2,9 +2,12 @@ package song
 
 import (
 	"time"
+
+	"github.com/google/uuid"
 )
 
 type Song struct {
+	Id          uuid.UUID `json:"id"`
 	Group       string    `json:"group"`
 	SongName    string    `json:"song"`
 	ReleaseDate time.Time `json:"release_date"`
@@ -26,4 +29,8 @@ func NewSong(
 		Text:        text,
 		Link:        link,
 	}
+}
+
+func (Song) TableName() string {
+	return "songs"
 }

@@ -22,15 +22,18 @@ type Server struct {
 	musicInfoClient clients.MusicInfoClient
 }
 
-var (
-	musicInfoServiceBaseUrl = os.Getenv("MUSIC_INFO__URL")
-)
-
 func NewServer() *http.Server {
 	port, _ := strconv.Atoi(os.Getenv("PORT"))
 
 	zap.L().Debug("Port was read from environment variables", zap.Int("port", port))
 
+	musicInfoServiceBaseUrl := os.Getenv("MUSIC_INFO__URL")
+
+	if musicInfoServiceBaseUrl == "" {
+		zap.L().Fatal("MUSIC_INFO__URL required but not provided")
+	}
+	zap.L().Debug("MusicInfoService URL was read from environment variables", zap.String("music_info_url", musicInfoServiceBaseUrl))
+	
 	newServer := &Server{
 		port: port,
 

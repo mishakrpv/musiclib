@@ -1,12 +1,14 @@
 BEGIN;
 
-CREATE TABLE IF NOT EXISTS song (
-    group VARCHAR(300) NOT NULL,
-    song_name VARCHAR(200) NOT NULL,
+CREATE TABLE IF NOT EXISTS songs (
+    id VARCHAR(255) PRIMARY KEY,
+    group_name VARCHAR(255) NOT NULL,
+    song_name VARCHAR(255) NOT NULL,
     release_date DATE,
     text TEXT,
-    link, VARCHAR(300),
-    PRIMARY KEY(group, song_name)
-)
+    link VARCHAR(500)
+);
+
+CREATE UNIQUE INDEX IF NOT EXISTS unique_group_name_song_name ON songs (group_name, song_name); 
 
 END;
