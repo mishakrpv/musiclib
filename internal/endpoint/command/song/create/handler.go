@@ -2,18 +2,18 @@ package create
 
 import (
 	"github.com/mishakrpv/musiclib/internal/domain/song"
-	"github.com/mishakrpv/musiclib/internal/infrastructure/services/clients"
+	"github.com/mishakrpv/musiclib/internal/infrastructure/services"
 
 	"go.uber.org/zap"
 )
 
 type Handler struct {
 	songRepo        song.Repository
-	musicInfoClient clients.MusicInfoClient
+	musicInfoClient services.MusicInfoClient
 }
 
 func NewHandler(repo song.Repository,
-	musicInfoClient clients.MusicInfoClient) *Handler {
+	musicInfoClient services.MusicInfoClient) *Handler {
 	return &Handler{songRepo: repo, musicInfoClient: musicInfoClient}
 }
 
