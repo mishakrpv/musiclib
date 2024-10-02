@@ -44,14 +44,6 @@ func NewSongRepository() song.Repository {
 	}
 	zap.L().Info("Db migrated")
 
-	zap.L().Info("Start seeding")
-	for _, seed := range All() {
-		if err := seed.Run(db); err != nil {
-			zap.L().Error("An error occured seeding db", zap.Error(err))
-		}
-	}
-	zap.L().Info("Db seeded")
-
 	return &SongRepository{
 		db: db,
 	}
