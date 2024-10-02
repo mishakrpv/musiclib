@@ -27,19 +27,19 @@ func NewServer() *http.Server {
 
 	zap.L().Debug("Port was read from environment variables", zap.Int("port", port))
 
-	musicInfoServiceBaseUrl := os.Getenv("MUSIC_INFO__URL")
+	musicInfoBaseUrl := os.Getenv("MUSIC_INFO__URL")
 
-	if musicInfoServiceBaseUrl == "" {
+	if musicInfoBaseUrl == "" {
 		zap.L().Fatal("MUSIC_INFO__URL required but not provided")
 	}
-	zap.L().Debug("MusicInfoService URL was read from environment variables", zap.String("music_info_url", musicInfoServiceBaseUrl))
+	zap.L().Debug("MusicInfo URL was read from environment variables", zap.String("musicinfo_url", musicInfoBaseUrl))
 	
 	newServer := &Server{
 		port: port,
 
 		songRepo: gorm.NewSongRepository(),
 
-		musicInfoClient: clients.NewHttpMusicInfoClient(musicInfoServiceBaseUrl),
+		musicInfoClient: clients.NewHttpMusicInfoClient(musicInfoBaseUrl),
 	}
 
 	server := &http.Server{
