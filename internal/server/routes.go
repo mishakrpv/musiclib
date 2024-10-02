@@ -7,8 +7,8 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/mishakrpv/musiclib/internal/domain/song"
-	"github.com/mishakrpv/musiclib/internal/endpoint/commands/song/create"
-	"github.com/mishakrpv/musiclib/internal/endpoint/commands/song/update"
+	"github.com/mishakrpv/musiclib/internal/endpoint/command/song/create"
+	"github.com/mishakrpv/musiclib/internal/endpoint/command/song/update"
 	"github.com/mishakrpv/musiclib/internal/endpoint/query"
 
 	"github.com/gin-gonic/gin"
