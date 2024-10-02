@@ -8,7 +8,7 @@ import (
 
 type Song struct {
 	Id          uuid.UUID `json:"id"`
-	Group       string    `json:"group"`
+	GroupName   string    `json:"group"`
 	SongName    string    `json:"song"`
 	ReleaseDate time.Time `json:"release_date"`
 	Text        string    `json:"text"`
@@ -16,14 +16,15 @@ type Song struct {
 }
 
 func NewSong(
-	group string,
+	groupName string,
 	songName string,
 	releaseDate time.Time,
 	text string,
 	link string,
 ) *Song {
 	return &Song{
-		Group:       group,
+		Id:          uuid.New(),
+		GroupName:   groupName,
 		SongName:    songName,
 		ReleaseDate: releaseDate,
 		Text:        text,

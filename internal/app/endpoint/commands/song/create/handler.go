@@ -1,6 +1,8 @@
 package create
 
 import (
+	"time"
+
 	"github.com/mishakrpv/musiclib/internal/app/domain/song"
 	"github.com/mishakrpv/musiclib/internal/app/infrastructure/services/clients"
 
@@ -24,8 +26,15 @@ func (h *Handler) Execute(request *Request) (*Response, error) {
 		return nil, err
 	}
 
+	format := "2006.01.02"
+	date, err := time.Parse(format, songDetail.ReleaseDate)
+	if err != nil {
+		zap.L().Error("An error occured parsing SongDetail release date", zap.Error(err))
+		return nil, err
+	}
+
 	song := song.NewSong(request.Group, request.Song,
-		songDetail.ReleaseDate, songDetail.Text, songDetail.Link)
+		date, songDetail.Text, songDetail.Link)
 
 	err = h.songRepo.Create(song)
 	if err != nil {

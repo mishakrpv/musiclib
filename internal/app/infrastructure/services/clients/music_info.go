@@ -3,9 +3,10 @@ package clients
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io"
 	"net/http"
-	"time"
+	"strings"
 
 	"go.uber.org/zap"
 )
@@ -15,7 +16,7 @@ type MusicInfoClient interface {
 }
 
 type SongDetail struct {
-	ReleaseDate time.Time
+	ReleaseDate string
 	Text        string
 	Link        string
 }
@@ -31,7 +32,13 @@ func NewHttpMusicInfoClient(serviceBaseUrl string) MusicInfoClient {
 func (h *HttpMusicInfoClient) GetSongDetail(group string, song string) (*SongDetail, error) {
 	zap.L().Debug("Creating http request", zap.String("service_base_url", h.serviceBaseUrl))
 
-	request, err := http.NewRequest(http.MethodGet, h.serviceBaseUrl+"/info", nil)
+	url := fmt.Sprintf("%s/info?group=%s&song=%s", h.serviceBaseUrl, group, song)
+	url = strings.Replace(url, " ", "+", -1)
+
+	zap.L().Debug("Info url", zap.String("url", url))
+
+	request, err := http.NewRequest(http.MethodGet,
+		url, nil)
 	if err != nil {
 		zap.L().Error("Error creating request", zap.Error(err))
 		return nil, err
