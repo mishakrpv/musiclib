@@ -14,7 +14,7 @@ func main() {
 		song := c.Query("song")
 
 		if group == "" || song == "" {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "query params should contain both group and song"})
+			c.Status(http.StatusBadRequest)
 			return
 		}
 

@@ -1,5 +1,5 @@
 services:
-  musicinfoapi:
+  mockmusicinfo:
     build:
       context: musicinfo-mock
       dockerfile: ./Dockerfile
