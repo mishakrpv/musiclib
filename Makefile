@@ -3,10 +3,10 @@ all: build test
 build:
 	@echo "Building..."
 	
-	@go build -o main cmd/musiclib-api/main.go
+	@go build -o main cmd/musiclib/main.go
 
 run:
-	@go run cmd/musiclib-api/main.go
+	@go run cmd/musiclib/main.go
 
 test:
 	@echo "Testing..."

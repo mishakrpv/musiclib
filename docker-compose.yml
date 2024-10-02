@@ -1,7 +1,7 @@
 services:
   musicinfoapi:
     build:
-      context: musicinfo-mock-api
+      context: musicinfo-mock
       dockerfile: ./Dockerfile
     ports:
       - "3256:3256"
