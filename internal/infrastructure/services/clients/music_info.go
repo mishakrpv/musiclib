@@ -2,12 +2,12 @@ package clients
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
 	"io"
 	"net/http"
 	"strings"
 
+	"github.com/mishakrpv/musiclib/internal/apperror"
 	"go.uber.org/zap"
 )
 
@@ -53,8 +53,8 @@ func (h *HttpMusicInfoClient) GetSongDetail(group string, song string) (*SongDet
 	}
 	defer response.Body.Close()
 
-	if response.StatusCode != http.StatusOK {
-		return nil, errors.New(response.Status)
+	if response.StatusCode == http.StatusNotFound {
+		return nil, apperror.ErrSongNotFound
 	}
 
 	body, err := io.ReadAll(response.Body)

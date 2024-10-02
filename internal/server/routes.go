@@ -1,17 +1,19 @@
 package server
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
 	"net/url"
 
-	"github.com/google/uuid"
 	"github.com/mishakrpv/musiclib/internal/domain/song"
 	"github.com/mishakrpv/musiclib/internal/endpoint/command/song/create"
 	"github.com/mishakrpv/musiclib/internal/endpoint/command/song/update"
 	"github.com/mishakrpv/musiclib/internal/endpoint/query"
+	"github.com/mishakrpv/musiclib/internal/apperror"
 
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 	pagination "github.com/webstradev/gin-pagination"
 	"go.uber.org/zap"
 )
@@ -42,6 +44,8 @@ func (s *Server) SongsHandler(c *gin.Context) {
 	filter := &query.Filter{}
 	if err := c.ShouldBindQuery(&filter); err != nil {
 		zap.L().Warn("Something went wrong while binding query", zap.Error(err))
+		c.Status(http.StatusBadRequest)
+		return
 	}
 
 	page := c.GetInt("page")
@@ -62,11 +66,11 @@ func (s *Server) SongsHandler(c *gin.Context) {
 
 	response, err := handler.Execute(filter)
 	if err != nil {
-		// TODO: map error to proper status code
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
 	}
 
-	response = response[page*amount:(page+1)*amount]
+	response = response[page*amount : (page+1)*amount]
 
 	res := make([]interface{}, 0, len(response))
 	for _, item := range response {
@@ -87,8 +91,12 @@ func (s *Server) LyricsHandler(c *gin.Context) {
 
 	verse, err := handler.Execute(id, page)
 	if err != nil {
-		// TODO: map error to proper status code
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		var status int = http.StatusInternalServerError
+		if errors.Is(err, apperror.ErrVerseNotFound) || errors.Is(err, apperror.ErrSongNotFound) {
+			status = http.StatusNotFound
+		}
+		c.JSON(status, gin.H{"error": err.Error()})
+		return
 	}
 
 	c.JSON(http.StatusOK, gin.H{fmt.Sprintf("verse number %d:", page): *verse})
@@ -101,8 +109,8 @@ func (s *Server) DeleteSongHandler(c *gin.Context) {
 
 	err := s.songRepo.Delete(id)
 	if err != nil {
-		// TODO: map error to proper status code
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
 	}
 
 	c.Status(http.StatusOK)
@@ -122,9 +130,10 @@ func (s *Server) UpdateSongHandler(c *gin.Context) {
 	id, err := uuid.Parse(songId)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "incorrect song id"})
+		return
 	}
 
-	s.songRepo.Update(&song.Song{
+	err = s.songRepo.Update(&song.Song{
 		Id:          id,
 		GroupName:   request.GroupName,
 		SongName:    request.SongName,
@@ -132,6 +141,10 @@ func (s *Server) UpdateSongHandler(c *gin.Context) {
 		Text:        request.Text,
 		Link:        request.Link,
 	})
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
 
 	c.Status(http.StatusOK)
 }
@@ -151,8 +164,12 @@ func (s *Server) CreateSongHandler(c *gin.Context) {
 
 	response, err := handler.Execute(request)
 	if err != nil {
-		// TODO: map error to proper status code
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		var status = http.StatusInternalServerError
+		if errors.Is(err, apperror.ErrSongNotFound) {
+			status = http.StatusNotFound
+		}
+		c.JSON(status, gin.H{"error": err.Error()})
+		return
 	}
 
 	c.JSON(http.StatusOK, &response)
