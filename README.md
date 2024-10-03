@@ -9,6 +9,7 @@
 * Music Info client is in the [internal/infrastructure/service](internal/infrastructure/service/)
 * Database connection and startup migration implementations are in the [internal/infrastructure/data/gorm](internal/infrastructure/data/gorm/)
 * Request and response models for commands and queries can be found in the [internal/endpoint/command](internal/endpoint/command/) and [internal/endpoint/query](internal/endpoint/query/) respectively
+* The [musicinfo-mock](musicinfo-mock/) contains implementation of a service for tests
 
 ## Running the service
 
@@ -18,7 +19,9 @@ Run the application from your terminal:
 make run
 ```
 
+> [!IMPORTANT]
 > Before starting the service, ensure that [.env file](.env) is configured properly according to your environment.
+> Make sure **MUSIC_INFO__URL** is specified.
 
 ## Database schema
 
