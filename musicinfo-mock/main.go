@@ -31,7 +31,7 @@ func main() {
 }
 
 type SongDetail struct {
-	ReleaseDate string
-	Text        string
-	Link        string
+	ReleaseDate string `json:"releaseDate"`
+	Text        string `json:"text"`
+	Link        string `json:"link"`
 }
