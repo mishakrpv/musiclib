@@ -9,7 +9,7 @@ import (
 
 	"github.com/mishakrpv/musiclib/internal/domain/song"
 	"github.com/mishakrpv/musiclib/internal/infrastructure/data/gorm"
-	"github.com/mishakrpv/musiclib/internal/infrastructure/services"
+	"github.com/mishakrpv/musiclib/internal/infrastructure/service"
 
 	"go.uber.org/zap"
 )
@@ -19,7 +19,7 @@ type Server struct {
 
 	songRepo song.Repository
 
-	musicInfoClient services.MusicInfoClient
+	musicInfoClient service.MusicInfoClient
 }
 
 func NewServer() *http.Server {
@@ -39,7 +39,7 @@ func NewServer() *http.Server {
 
 		songRepo: gorm.NewSongRepository(),
 
-		musicInfoClient: services.NewHttpMusicInfoClient(musicInfoBaseUrl),
+		musicInfoClient: service.NewHttpMusicInfoClient(musicInfoBaseUrl),
 	}
 
 	server := &http.Server{

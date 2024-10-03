@@ -2,7 +2,7 @@ package command
 
 import (
 	"github.com/mishakrpv/musiclib/internal/domain/song"
-	"github.com/mishakrpv/musiclib/internal/infrastructure/services"
+	"github.com/mishakrpv/musiclib/internal/infrastructure/service"
 
 	"go.uber.org/zap"
 )
@@ -18,11 +18,11 @@ type CreateResponse struct {
 
 type CreateCommand struct {
 	songRepo        song.Repository
-	musicInfoClient services.MusicInfoClient
+	musicInfoClient service.MusicInfoClient
 }
 
 func NewCreateCommand(repo song.Repository,
-	musicInfoClient services.MusicInfoClient) *CreateCommand {
+	musicInfoClient service.MusicInfoClient) *CreateCommand {
 	return &CreateCommand{songRepo: repo, musicInfoClient: musicInfoClient}
 }
 
