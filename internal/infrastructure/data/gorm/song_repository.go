@@ -28,6 +28,8 @@ func NewSongRepository() song.Repository {
 		"host=%s user=%s password=%s dbname=%s port=%s sslmode=disable",
 		host, user, password, database, port)
 
+	zap.L().Info("Postgres dsn read from configurations", zap.String("dsn", dsn))
+
 	db, err := gorm.Open(postgres.New(postgres.Config{
 		DSN: dsn,
 	}), &gorm.Config{})

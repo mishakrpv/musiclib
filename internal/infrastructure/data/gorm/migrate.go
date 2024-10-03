@@ -48,7 +48,7 @@ func Migrate(db *gorm.DB) error {
 		zap.L().Info("Migration has been applied", zap.String("from_filename", file.Name()))
 	}
 
-	zap.L().Debug("All migrations applied successfully")
+	zap.L().Info("All migrations has been applied successfully")
 
 	return nil
 }

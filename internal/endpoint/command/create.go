@@ -32,6 +32,10 @@ func (h *CreateCommand) Execute(request *CreateRequest) (*CreateResponse, error)
 		zap.L().Error("An error occured getting SongDetail", zap.Error(err))
 		return nil, err
 	}
+	zap.L().Debug("SongDetail retrieved from API successfully",
+		zap.String("link", songDetail.Link),
+		zap.String("text", songDetail.Text),
+		zap.String("releaseDate", songDetail.ReleaseDate))
 
 	song := song.NewSong(request.Group, request.Song,
 		songDetail.ReleaseDate, songDetail.Text, songDetail.Link)
@@ -41,6 +45,7 @@ func (h *CreateCommand) Execute(request *CreateRequest) (*CreateResponse, error)
 		zap.L().Error("An error occured creating song", zap.Error(err))
 		return nil, err
 	}
+	zap.L().Debug("Song created successfully", zap.String("id", song.Id.String()))
 
 	return &CreateResponse{Song: song}, nil
 }

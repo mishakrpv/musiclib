@@ -3,8 +3,9 @@ package query
 import (
 	"strings"
 
-	"github.com/mishakrpv/musiclib/internal/domain/song"
 	"github.com/mishakrpv/musiclib/internal/apperror"
+	"github.com/mishakrpv/musiclib/internal/domain/song"
+	"go.uber.org/zap"
 )
 
 type LyricsQuery struct {
@@ -22,6 +23,7 @@ func (h *LyricsQuery) Execute(id string, page int) (*string, error) {
 	if err != nil {
 		return nil, apperror.ErrSongNotFound
 	}
+	zap.L().Debug("Song retrieved from db successfully", zap.String("id", song.Id.String()))
 
 	verses := strings.Split(song.Text, "\n\n")
 	if page > 0 && len(verses) >= page {

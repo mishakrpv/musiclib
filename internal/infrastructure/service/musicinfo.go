@@ -30,7 +30,7 @@ func NewHttpMusicInfoClient(serviceBaseUrl string) MusicInfoClient {
 }
 
 func (h *HttpMusicInfoClient) GetSongDetail(group string, song string) (*SongDetail, error) {
-	zap.L().Debug("Creating http request", zap.String("service_base_url", h.serviceBaseUrl))
+	zap.L().Info("Creating http request", zap.String("service_base_url", h.serviceBaseUrl))
 
 	url := fmt.Sprintf("%s/info?group=%s&song=%s", h.serviceBaseUrl, group, song)
 	url = strings.Replace(url, " ", "+", -1)
@@ -44,6 +44,8 @@ func (h *HttpMusicInfoClient) GetSongDetail(group string, song string) (*SongDet
 		return nil, err
 	}
 
+	zap.L().Info("Request created")
+
 	client := &http.Client{}
 
 	response, err := client.Do(request)
@@ -53,7 +55,10 @@ func (h *HttpMusicInfoClient) GetSongDetail(group string, song string) (*SongDet
 	}
 	defer response.Body.Close()
 
+	zap.L().Info("Request sent")
+
 	if response.StatusCode == http.StatusNotFound {
+		zap.L().Warn("Response does not indicate success")
 		return nil, apperror.ErrSongNotFound
 	}
 
@@ -63,6 +68,8 @@ func (h *HttpMusicInfoClient) GetSongDetail(group string, song string) (*SongDet
 		return nil, err
 	}
 
+	zap.L().Info("Response body read")
+
 	detail := &SongDetail{}
 
 	err = json.Unmarshal(body, &detail)
@@ -70,6 +77,8 @@ func (h *HttpMusicInfoClient) GetSongDetail(group string, song string) (*SongDet
 		zap.L().Error("Error unmarshaling response body", zap.Error(err))
 		return nil, err
 	}
+
+	zap.L().Info("Response body unmarshaled")
 
 	return detail, nil
 }
