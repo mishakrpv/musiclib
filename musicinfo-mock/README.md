@@ -1,5 +1,7 @@
 # Music Info Mock
 
+> Has been developed for test purposes
+
 This directory contains simple Go server running on `3256` port. It has only one endpoint described by the following specification:
 
 ```yaml

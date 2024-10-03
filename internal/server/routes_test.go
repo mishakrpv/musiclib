@@ -13,6 +13,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// Handler test example
 func TestCreateSongHandler(t *testing.T) {
 	ConfigureLogging()
 	testServer := &Server{
