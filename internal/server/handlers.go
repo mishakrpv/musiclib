@@ -6,12 +6,13 @@ import (
 	"net/http"
 	"net/url"
 
-	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
 	"github.com/mishakrpv/musiclib/internal/apperror"
 	"github.com/mishakrpv/musiclib/internal/domain/song"
 	"github.com/mishakrpv/musiclib/internal/endpoint/command"
 	"github.com/mishakrpv/musiclib/internal/endpoint/query"
+
+	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 	"go.uber.org/zap"
 )
 
