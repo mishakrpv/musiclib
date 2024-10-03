@@ -8,8 +8,8 @@ import (
 )
 
 type CreateRequest struct {
-	Group string `json:"group" binding:"required"`
-	Song  string `json:"song" binding:"required"`
+	Group string `json:"group" binding:"required" maxLength:"255"`
+	Song  string `json:"song" binding:"required" maxLength:"255"`
 }
 
 type CreateResponse struct {

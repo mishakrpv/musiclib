@@ -4,7 +4,7 @@ CREATE TABLE IF NOT EXISTS songs (
     song_name VARCHAR(255) NOT NULL,
     release_date VARCHAR(10),
     text TEXT,
-    link VARCHAR(500)
+    link VARCHAR(255)
 );
 
 CREATE UNIQUE INDEX IF NOT EXISTS unique_group_name_song_name ON songs (group_name, song_name);
