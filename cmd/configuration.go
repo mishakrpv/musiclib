@@ -18,7 +18,9 @@ func NewCmdConfiguration() *CmdConfiguration {
 				Port: getenvOrDefault("PORT", "8080"),
 				Host: getenvOrDefault("HOST", "localhost"),
 			},
-			Log: config.LoadLog(),
+			Log:          config.Load[config.Log](),
+			DBConfig:     config.Load[config.DBConfig](),
+			MusicInfoUrl: getenvOrDefault("MUSIC_INFO_URL", "http://localhost:3256"),
 		},
 	}
 }

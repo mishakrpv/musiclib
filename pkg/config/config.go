@@ -19,22 +19,15 @@ const (
 
 type Configuration struct {
 	ServerConfig *ServerConfig
+	Log          *Log
+	DBConfig     *DBConfig
 
-	Log *Log
+	MusicInfoUrl string
 }
 
 type ServerConfig struct {
 	Port string `env:"PORT"`
 	Host string `env:"HOST"`
-}
-
-func LoadServerConfig() *ServerConfig {
-	cfg, err := env.ParseAs[ServerConfig]()
-	if err != nil {
-		panic(err)
-	}
-
-	return &cfg
 }
 
 type Log struct {
@@ -49,8 +42,16 @@ type Log struct {
 	Compress   bool   `env:"LOG__COMPRESS"`
 }
 
-func LoadLog() *Log {
-	cfg, err := env.ParseAs[Log]()
+type DBConfig struct {
+	Database string `env:"DB_DATABASE"`
+	Pwd      string `env:"DB_PASSWORD"`
+	User     string `env:"DB_USER"`
+	Port     string `env:"DB_PORT"`
+	HOST     string `env:"DB_HOST"`
+}
+
+func Load[T any]() *T {
+	cfg, err := env.ParseAs[T]()
 	if err != nil {
 		panic(err)
 	}
