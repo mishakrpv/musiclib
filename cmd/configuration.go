@@ -1,6 +1,11 @@
 package cmd
 
-import "github.com/mishakrpv/musiclib/pkg/config"
+import (
+	"os"
+
+	_ "github.com/joho/godotenv/autoload"
+	"github.com/mishakrpv/musiclib/pkg/config"
+)
 
 type CmdConfiguration struct {
 	config.Configuration
@@ -8,6 +13,24 @@ type CmdConfiguration struct {
 
 func NewCmdConfiguration() *CmdConfiguration {
 	return &CmdConfiguration{
-		Configuration: config.Configuration{},
+		Configuration: config.Configuration{
+			ServerConfig: &config.ServerConfig{
+				Port: getenvOrDefault("PORT", "8080"),
+				Host: getenvOrDefault("HOST", "localhost"),
+			},
+			Log: &config.Log{
+				Level: "DEBUG",
+			},
+		},
 	}
+}
+
+func getenvOrDefault(key string, defaultValue string) string {
+	value := os.Getenv(key)
+
+	if value != "" {
+		return value
+	}
+
+	return defaultValue
 }

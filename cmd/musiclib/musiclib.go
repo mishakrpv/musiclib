@@ -1,10 +1,20 @@
 package main
 
 import (
-	"github.com/mishakrpv/musiclib/internal/server"
+	"context"
+	"encoding/json"
+	stdlog "log"
+	"net"
+	"net/http"
+	"os"
+	"os/signal"
+	"syscall"
 
-	_ "github.com/joho/godotenv/autoload"
-	"go.uber.org/zap"
+	"github.com/mishakrpv/musiclib/cmd"
+	"github.com/mishakrpv/musiclib/pkg/config"
+	"github.com/mishakrpv/musiclib/pkg/logger"
+	pserver "github.com/mishakrpv/musiclib/pkg/server"
+	"github.com/rs/zerolog/log"
 )
 
 //	@title			Musiclib API
@@ -13,15 +23,53 @@ import (
 
 //	@contact.email	mishavkrpv@gmail.com
 
-//	@host		localhost:8080
-//	@BasePath	/api/v1
+// @host		localhost:8080
+// @BasePath	/api/v1
 func main() {
-	server.ConfigureLogging()
+	// config inits
+	config := cmd.NewCmdConfiguration()
 
-	server := server.NewServer()
-
-	err := server.ListenAndServe()
-	if err != nil {
-		zap.L().Fatal("Cannot start server", zap.Error(err))
+	ctx := context.Background()
+	if err := runCmd(ctx, &config.Configuration); err != nil {
+		stdlog.Println(err)
+		os.Exit(1)
 	}
+}
+
+func runCmd(ctx context.Context, cfg *config.Configuration) error {
+	logger.SetupLogger(cfg)
+
+	jsonConf, err := json.Marshal(cfg)
+	if err != nil {
+		log.Error().Err(err).Msg("Could not marshal static configuration")
+		log.Debug().Interface("staticConfiguration", cfg).Msg("Static configuration loaded [struct]")
+	} else {
+		log.Debug().RawJSON("staticConfiguration", jsonConf).Msg("Static configuration loaded [json]")
+	}
+
+	svr, err := setupServer(ctx, cfg)
+	if err != nil {
+		return err
+	}
+
+	ctx, _ = signal.NotifyContext(ctx, syscall.SIGINT, syscall.SIGTERM)
+
+	svr.Start(ctx)
+	defer svr.Close()
+
+	svr.Wait()
+	log.Info().Msg("Shutting down")
+	return nil
+}
+
+func setupServer(_ context.Context, cfg *config.Configuration) (*pserver.Server, error) {
+	httpServer := &http.Server{
+		Addr:         net.JoinHostPort(cfg.ServerConfig.Host, cfg.ServerConfig.Port),
+		IdleTimeout:  config.DefaultIdleTimeout,
+		ReadTimeout:  config.DefaultReadTimeout,
+		WriteTimeout: config.DefaultWriteTimeout,
+		Handler:      nil,
+	}
+
+	return pserver.NewServer(httpServer), nil
 }
