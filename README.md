@@ -5,11 +5,11 @@
 ## Navigation
 
 * Application entry point, **main** package, is [here](cmd/musiclib/musiclib.go)
-* Routes and server configuration are located in the [internal/server](internal/server/) directory as well as handlers
-* Music Info client is in the [internal/infrastructure/service](internal/infrastructure/service/)
-* Database connection and startup migration implementations are in the [internal/infrastructure/data/gorm](internal/infrastructure/data/gorm/)
+* Routes are located in the [internal/router](internal/router/) directory as well as handlers
+* Music Info client is in the [pkg/infra/musicinfo](pkg/infra/musicinfo/)
+* Database connection and startup migration implementations are in the [pkg/infra/db](pkg/infra/db/)
 * Request and response models for commands and queries can be found in the [internal/endpoint/command](internal/endpoint/command/) and [internal/endpoint/query](internal/endpoint/query/) respectively
-* The [musicinfo-mock](musicinfo-mock/) contains implementation of a service for tests
+* The [mock of musicinfo](musicinfo/) contains implementation of a service for tests
 
 ## Running the service
 
@@ -21,7 +21,7 @@ make run
 
 > [!IMPORTANT]
 > Before starting the service, ensure that [.env file](.env) is configured properly according to your environment.
-> Make sure **MUSIC_INFO__URL** is specified.
+> Make sure **MUSIC_INFO_URL** is specified.
 
 ## Database schema
 
@@ -38,7 +38,7 @@ Go version:
 Go packages used:
 
 * **[Gin](https://github.com/gin-gonic/gin)** v1.10.0
-* **[Uber zap](https://github.com/uber-go/zap)** v1.27.0
+* **[zerolog](https://github.com/rs/zerolog)** v1.33.0
 * **[swag](https://github.com/swaggo/swag)** v1.16.3
 * **[gorm](https://github.com/go-gorm/gorm)** v1.25.12
 
