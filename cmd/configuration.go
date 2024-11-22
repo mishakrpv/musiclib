@@ -18,9 +18,7 @@ func NewCmdConfiguration() *CmdConfiguration {
 				Port: getenvOrDefault("PORT", "8080"),
 				Host: getenvOrDefault("HOST", "localhost"),
 			},
-			Log: &config.Log{
-				Level: "DEBUG",
-			},
+			Log: config.LoadLog(),
 		},
 	}
 }

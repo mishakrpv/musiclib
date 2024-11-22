@@ -3,6 +3,7 @@ module github.com/mishakrpv/musiclib
 go 1.23.1
 
 require (
+	github.com/caarlos0/env/v11 v11.2.2
 	github.com/gin-gonic/gin v1.10.0
 	github.com/swaggo/swag v1.16.3
 )
