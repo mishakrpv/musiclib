@@ -8,10 +8,10 @@ lint:
 build:
 	@echo "Building..."
 	
-	@go build -o main cmd/musiclib/main.go
+	@go build -o main cmd/musiclib/musiclib.go
 
 run:
-	@go run cmd/musiclib/main.go
+	@go run cmd/musiclib/musiclib.go
 
 test:
 	@echo "Testing..."
