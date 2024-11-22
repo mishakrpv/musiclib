@@ -1,4 +1,4 @@
-package service
+package musicinfo
 
 import (
 	"encoding/json"
@@ -11,7 +11,7 @@ import (
 	"go.uber.org/zap"
 )
 
-type MusicInfoClient interface {
+type Client interface {
 	GetSongDetail(group string, song string) (*SongDetail, error)
 }
 
@@ -21,15 +21,15 @@ type SongDetail struct {
 	Link        string `json:"link"`
 }
 
-type HttpMusicInfoClient struct {
+type HTTPClient struct {
 	serviceBaseUrl string
 }
 
-func NewHttpMusicInfoClient(serviceBaseUrl string) MusicInfoClient {
-	return &HttpMusicInfoClient{serviceBaseUrl: serviceBaseUrl}
+func NewHTTPMusicInfoClient(serviceBaseUrl string) Client {
+	return &HTTPClient{serviceBaseUrl: serviceBaseUrl}
 }
 
-func (h *HttpMusicInfoClient) GetSongDetail(group string, song string) (*SongDetail, error) {
+func (h *HTTPClient) GetSongDetail(group string, song string) (*SongDetail, error) {
 	zap.L().Info("Creating http request", zap.String("service_base_url", h.serviceBaseUrl))
 
 	url := fmt.Sprintf("%s/info?group=%s&song=%s", h.serviceBaseUrl, group, song)

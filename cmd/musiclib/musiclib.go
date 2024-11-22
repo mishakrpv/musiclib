@@ -11,7 +11,10 @@ import (
 	"syscall"
 
 	"github.com/mishakrpv/musiclib/cmd"
+	"github.com/mishakrpv/musiclib/internal/router"
 	"github.com/mishakrpv/musiclib/pkg/config"
+	"github.com/mishakrpv/musiclib/pkg/infra/db"
+	"github.com/mishakrpv/musiclib/pkg/infra/musicinfo"
 	"github.com/mishakrpv/musiclib/pkg/logger"
 	pserver "github.com/mishakrpv/musiclib/pkg/server"
 	"github.com/rs/zerolog/log"
@@ -47,12 +50,12 @@ func runCmd(ctx context.Context, cfg *config.Configuration) error {
 		log.Debug().RawJSON("staticConfiguration", jsonConf).Msg("Static configuration loaded [json]")
 	}
 
+	ctx, _ = signal.NotifyContext(ctx, syscall.SIGINT, syscall.SIGTERM)
+
 	svr, err := setupServer(ctx, cfg)
 	if err != nil {
 		return err
 	}
-
-	ctx, _ = signal.NotifyContext(ctx, syscall.SIGINT, syscall.SIGTERM)
 
 	svr.Start(ctx)
 	defer svr.Close()
@@ -62,13 +65,20 @@ func runCmd(ctx context.Context, cfg *config.Configuration) error {
 	return nil
 }
 
-func setupServer(_ context.Context, cfg *config.Configuration) (*pserver.Server, error) {
+func setupServer(ctx context.Context, cfg *config.Configuration) (*pserver.Server, error) {
+	client := musicinfo.NewHTTPMusicInfoClient(cfg.MusicInfoUrl)
+
+	repo, err := db.NewSongRepository(ctx, cfg.DBConfig)
+	if err != nil {
+		return nil, err
+	}
+
 	httpServer := &http.Server{
 		Addr:         net.JoinHostPort(cfg.ServerConfig.Host, cfg.ServerConfig.Port),
 		IdleTimeout:  config.DefaultIdleTimeout,
 		ReadTimeout:  config.DefaultReadTimeout,
 		WriteTimeout: config.DefaultWriteTimeout,
-		Handler:      nil,
+		Handler:      router.New(client, repo),
 	}
 
 	return pserver.NewServer(httpServer), nil

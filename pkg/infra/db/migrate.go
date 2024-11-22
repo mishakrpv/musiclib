@@ -1,4 +1,4 @@
-package gorm
+package db
 
 import (
 	"io/fs"
@@ -17,7 +17,7 @@ func Migrate(db *gorm.DB) error {
 		if err != nil {
 			return err
 		}
-		
+
 		fileInfo, err := d.Info()
 		if err != nil {
 			return err

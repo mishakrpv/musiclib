@@ -1,4 +1,4 @@
-package server
+package router
 
 import (
 	"errors"
@@ -31,9 +31,9 @@ import (
 // @Failure		400		{string}	string	"error"
 // @Failure		500		{string}	string	"error"
 // @Router			/songs [get]
-func (s *Server) SongsHandler(c *gin.Context) {
+func (r *Router) SongsHandler(c *gin.Context) {
 	zap.L().Info("Start handling request")
-	
+
 	filter := &query.Filter{}
 	if err := c.ShouldBindQuery(&filter); err != nil {
 		zap.L().Error("An error occured binding query", zap.Error(err))
@@ -65,7 +65,7 @@ func (s *Server) SongsHandler(c *gin.Context) {
 	filter.Link = link
 	zap.L().Debug("Query link decoded", zap.String("link", filter.Link))
 
-	qr := query.NewSongsQuery(s.songRepo)
+	qr := query.NewSongsQuery(r.songRepo)
 
 	response, err := qr.Execute(filter)
 	if err != nil {
@@ -98,7 +98,7 @@ func (s *Server) SongsHandler(c *gin.Context) {
 // @Failure		404		{string}	string	"error"
 // @Failure		500		{string}	string	"error"
 // @Router			/songs/{song_id}/lyrics [get]
-func (s *Server) LyricsHandler(c *gin.Context) {
+func (r *Router) LyricsHandler(c *gin.Context) {
 	zap.L().Info("Start handling request")
 
 	id := c.Param("song_id")
@@ -112,7 +112,7 @@ func (s *Server) LyricsHandler(c *gin.Context) {
 	page := c.GetInt("page")
 	zap.L().Debug("Params bound", zap.String("id", id), zap.Int("page", page))
 
-	query := query.NewLyricsQuery(s.songRepo)
+	query := query.NewLyricsQuery(r.songRepo)
 
 	verse, err := query.Execute(id, page)
 	if err != nil {
@@ -137,7 +137,7 @@ func (s *Server) LyricsHandler(c *gin.Context) {
 // @Failure		400	{string}	string	"error"
 // @Failure		500	{string}	string	"error"
 // @Router			/songs/{song_id} [delete]
-func (s *Server) DeleteSongHandler(c *gin.Context) {
+func (r *Router) DeleteSongHandler(c *gin.Context) {
 	zap.L().Info("Start handling request")
 
 	id := c.Param("song_id")
@@ -150,7 +150,7 @@ func (s *Server) DeleteSongHandler(c *gin.Context) {
 
 	zap.L().Debug("Param bound", zap.String("id", id))
 
-	err = s.songRepo.Delete(id)
+	err = r.songRepo.Delete(id)
 	if err != nil {
 		zap.L().Error("Something went wrong while deleting song", zap.Error(err))
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -171,7 +171,7 @@ func (s *Server) DeleteSongHandler(c *gin.Context) {
 // @Failure		400	{string}	string	"error"
 // @Failure		500	{string}	string	"error"
 // @Router			/songs/{song_id} [put]
-func (s *Server) UpdateSongHandler(c *gin.Context) {
+func (r *Router) UpdateSongHandler(c *gin.Context) {
 	zap.L().Info("Start handling request")
 
 	songId := c.Param("song_id")
@@ -191,7 +191,7 @@ func (s *Server) UpdateSongHandler(c *gin.Context) {
 		return
 	}
 
-	err = s.songRepo.Update(&song.Song{
+	err = r.songRepo.Update(&song.Song{
 		Id:          id,
 		GroupName:   request.GroupName,
 		SongName:    request.SongName,
@@ -220,8 +220,8 @@ func (s *Server) UpdateSongHandler(c *gin.Context) {
 // @Failure		404		{string}	string	"error"
 // @Failure		500		{string}	string	"error"
 // @Router			/songs [post]
-func (s *Server) CreateSongHandler(c *gin.Context) {
-	cmd := command.NewCreateCommand(s.songRepo, s.musicInfoClient)
+func (r *Router) CreateSongHandler(c *gin.Context) {
+	cmd := command.NewCreateCommand(r.songRepo, r.musicinfoClient)
 
 	request := &command.CreateRequest{}
 	if err := c.ShouldBindJSON(&request); err != nil {

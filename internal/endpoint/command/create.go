@@ -2,7 +2,7 @@ package command
 
 import (
 	"github.com/mishakrpv/musiclib/internal/domain/song"
-	"github.com/mishakrpv/musiclib/internal/infrastructure/service"
+	"github.com/mishakrpv/musiclib/pkg/infra/musicinfo"
 
 	"go.uber.org/zap"
 )
@@ -18,16 +18,16 @@ type CreateResponse struct {
 
 type CreateCommand struct {
 	songRepo        song.Repository
-	musicInfoClient service.MusicInfoClient
+	musicinfoClient musicinfo.Client
 }
 
 func NewCreateCommand(repo song.Repository,
-	musicInfoClient service.MusicInfoClient) *CreateCommand {
-	return &CreateCommand{songRepo: repo, musicInfoClient: musicInfoClient}
+	musicinfoClient musicinfo.Client) *CreateCommand {
+	return &CreateCommand{songRepo: repo, musicinfoClient: musicinfoClient}
 }
 
 func (h *CreateCommand) Execute(request *CreateRequest) (*CreateResponse, error) {
-	songDetail, err := h.musicInfoClient.GetSongDetail(request.Group, request.Song)
+	songDetail, err := h.musicinfoClient.GetSongDetail(request.Group, request.Song)
 	if err != nil {
 		zap.L().Error("An error occured getting SongDetail", zap.Error(err))
 		return nil, err

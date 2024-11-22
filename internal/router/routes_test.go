@@ -1,4 +1,4 @@
-package server
+package router
 
 import (
 	"bytes"
@@ -15,14 +15,13 @@ import (
 
 // Handler test example
 func TestCreateSongHandler(t *testing.T) {
-	ConfigureLogging()
-	testServer := &Server{
+	testRouter := &Router{
 		songRepo: mock.NewSongRepository(),
 
-		musicInfoClient: mock.NewGoodMusicInfoClient(),
+		musicinfoClient: mock.NewGoodMusicInfoClient(),
 	}
 	r := gin.New()
-	r.POST("/songs", testServer.CreateSongHandler)
+	r.POST("/songs", testRouter.CreateSongHandler)
 
 	var tests = []struct {
 		name           string

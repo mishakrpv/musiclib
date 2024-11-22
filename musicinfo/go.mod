@@ -1,4 +1,4 @@
-module github.com/mishakrpv/musiclib/musicinfo-mock
+module github.com/mishakrpv/musiclib/musicinfo
 
 go 1.23.1
 

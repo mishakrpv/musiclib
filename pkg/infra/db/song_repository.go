@@ -1,32 +1,25 @@
-package gorm
+package db
 
 import (
+	"context"
 	"fmt"
-	"os"
 
 	"github.com/mishakrpv/musiclib/internal/domain/song"
-
+	"github.com/mishakrpv/musiclib/pkg/config"
+	"github.com/rs/zerolog/log"
 	"go.uber.org/zap"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
-)
-
-var (
-	host     = os.Getenv("DB_HOST")
-	user     = os.Getenv("DB_USER")
-	password = os.Getenv("DB_PASSWORD")
-	database = os.Getenv("DB_DATABASE")
-	port     = os.Getenv("DB_PORT")
 )
 
 type SongRepository struct {
 	db *gorm.DB
 }
 
-func NewSongRepository() song.Repository {
+func NewSongRepository(ctx context.Context, cfg *config.DBConfig) (song.Repository, error) {
 	dsn := fmt.Sprintf(
 		"host=%s user=%s password=%s dbname=%s port=%s sslmode=disable",
-		host, user, password, database, port)
+		cfg.HOST, cfg.User, cfg.Pwd, cfg.Database, cfg.Port)
 
 	zap.L().Info("Postgres dsn read from configurations", zap.String("dsn", dsn))
 
@@ -35,7 +28,20 @@ func NewSongRepository() song.Repository {
 	}), &gorm.Config{})
 	if err != nil {
 		zap.L().Fatal("Cannot open database connection", zap.Error(err))
+		return nil, err
 	}
+
+	go func(ctx context.Context) {
+		<-ctx.Done()
+		logger := log.Ctx(ctx)
+		logger.Info().Msg("Closing DB connection...")
+		sqlDB, err := db.DB()
+		if err != nil {
+			log.Error().Err(err).Msg("DB conn forced to close with error")
+		} else {
+			sqlDB.Close()
+		}
+	}(ctx)
 
 	zap.L().Info("Database connection has been opened", zap.String("dsn", dsn))
 
@@ -43,12 +49,13 @@ func NewSongRepository() song.Repository {
 	err = Migrate(db)
 	if err != nil {
 		zap.L().Fatal("An error occured migrating database", zap.Error(err))
+		return nil, err
 	}
 	zap.L().Info("Db migrated")
 
 	return &SongRepository{
 		db: db,
-	}
+	}, nil
 }
 
 func (repo *SongRepository) Create(song *song.Song) error {
