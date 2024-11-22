@@ -1,5 +1,10 @@
 all: build test
 
+.PHONY: lint
+#? lint: Run golangci-lint
+lint:
+	golangci-lint run
+
 build:
 	@echo "Building..."
 	
