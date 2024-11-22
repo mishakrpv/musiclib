@@ -10,10 +10,10 @@ import (
 	"github.com/mishakrpv/musiclib/internal/domain/song"
 	"github.com/mishakrpv/musiclib/internal/endpoint/command"
 	"github.com/mishakrpv/musiclib/internal/endpoint/query"
+	"github.com/rs/zerolog/log"
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
-	"go.uber.org/zap"
 )
 
 // @Summary		Songs
@@ -32,11 +32,11 @@ import (
 // @Failure		500		{string}	string	"error"
 // @Router			/songs [get]
 func (r *Router) SongsHandler(c *gin.Context) {
-	zap.L().Info("Start handling request")
+	log.Info().Msg("Start handling request")
 
 	filter := &query.Filter{}
 	if err := c.ShouldBindQuery(&filter); err != nil {
-		zap.L().Error("An error occured binding query", zap.Error(err))
+		log.Error().Err(err).Msg("An error occured binding query")
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
@@ -44,32 +44,33 @@ func (r *Router) SongsHandler(c *gin.Context) {
 	page := c.GetInt("page")
 	amount := c.GetInt("songs")
 
-	zap.L().Debug("Query bound",
-		zap.String("group", filter.GroupName),
-		zap.String("song", filter.SongName),
-		zap.String("date", filter.ReleaseDate),
-		zap.String("text", filter.Text),
-		zap.String("link", filter.Link),
-		zap.Int("page", page),
-		zap.Int("amount", amount))
+	log.Debug().
+		Str("group", filter.GroupName).
+		Str("song", filter.SongName).
+		Str("date", filter.ReleaseDate).
+		Str("text", filter.Text).
+		Str("link", filter.Link).
+		Int("page", page).
+		Int("amount", amount).
+		Msg("Query bound")
 
 	amount--
 	page--
 
 	link, err := url.QueryUnescape(filter.Link)
 	if err != nil {
-		zap.L().Error("An error occured decoding link", zap.Error(err))
+		log.Error().Err(err).Msg("An error occured decoding link")
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 	filter.Link = link
-	zap.L().Debug("Query link decoded", zap.String("link", filter.Link))
+	log.Debug().Str("link", filter.Link).Msg("Query link decoded")
 
 	qr := query.NewSongsQuery(r.songRepo)
 
 	response, err := qr.Execute(filter)
 	if err != nil {
-		zap.L().Error("Something went wrong while executing query", zap.Error(err))
+		log.Error().Err(err).Msg("Something went wrong while executing query")
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
@@ -83,7 +84,7 @@ func (r *Router) SongsHandler(c *gin.Context) {
 		}
 	}
 
-	zap.L().Info("Request handled successfully")
+	log.Info().Msg("Request handled successfully")
 	c.JSON(http.StatusOK, &res)
 }
 
@@ -99,18 +100,18 @@ func (r *Router) SongsHandler(c *gin.Context) {
 // @Failure		500		{string}	string	"error"
 // @Router			/songs/{song_id}/lyrics [get]
 func (r *Router) LyricsHandler(c *gin.Context) {
-	zap.L().Info("Start handling request")
+	log.Info().Msg("Start handling request")
 
 	id := c.Param("song_id")
 	_, err := uuid.Parse(id)
 	if err != nil {
-		zap.L().Error("An error occured parsing id", zap.Error(err))
+		log.Error().Err(err).Msg("An error occured parsing id")
 		c.JSON(http.StatusBadRequest, gin.H{"error": "incorrect song id"})
 		return
 	}
 
 	page := c.GetInt("page")
-	zap.L().Debug("Params bound", zap.String("id", id), zap.Int("page", page))
+	log.Debug().Str("id", id).Int("page", page).Msg("Params bound")
 
 	query := query.NewLyricsQuery(r.songRepo)
 
@@ -120,12 +121,12 @@ func (r *Router) LyricsHandler(c *gin.Context) {
 		if errors.Is(err, apperror.ErrVerseNotFound) || errors.Is(err, apperror.ErrSongNotFound) {
 			status = http.StatusNotFound
 		}
-		zap.L().Error("An error occured executing query", zap.Error(err))
+		log.Error().Err(err).Msg("An error occured executing query")
 		c.JSON(status, gin.H{"error": err.Error()})
 		return
 	}
 
-	zap.L().Info("Request handled successfully")
+	log.Info().Msg("Request handled successfully")
 	c.JSON(http.StatusOK, gin.H{fmt.Sprintf("verse number %d:", page): *verse})
 }
 
@@ -138,26 +139,26 @@ func (r *Router) LyricsHandler(c *gin.Context) {
 // @Failure		500	{string}	string	"error"
 // @Router			/songs/{song_id} [delete]
 func (r *Router) DeleteSongHandler(c *gin.Context) {
-	zap.L().Info("Start handling request")
+	log.Info().Msg("Start handling request")
 
 	id := c.Param("song_id")
 	_, err := uuid.Parse(id)
 	if err != nil {
-		zap.L().Error("An error occured parsing id", zap.Error(err))
+		log.Error().Err(err).Msg("An error occured parsing id")
 		c.JSON(http.StatusBadRequest, gin.H{"error": "incorrect song id"})
 		return
 	}
 
-	zap.L().Debug("Param bound", zap.String("id", id))
+	log.Debug().Str("id", id).Msg("Param bound")
 
 	err = r.songRepo.Delete(id)
 	if err != nil {
-		zap.L().Error("Something went wrong while deleting song", zap.Error(err))
+		log.Error().Err(err).Msg("Something went wrong while deleting a song")
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	zap.L().Info("Request handled successfully")
+	log.Info().Msg("Request handled successfully")
 	c.Status(http.StatusOK)
 }
 
@@ -172,21 +173,21 @@ func (r *Router) DeleteSongHandler(c *gin.Context) {
 // @Failure		500	{string}	string	"error"
 // @Router			/songs/{song_id} [put]
 func (r *Router) UpdateSongHandler(c *gin.Context) {
-	zap.L().Info("Start handling request")
+	log.Info().Msg("Start handling request")
 
 	songId := c.Param("song_id")
 	id, err := uuid.Parse(songId)
 	if err != nil {
-		zap.L().Error("An error occured parsing id", zap.Error(err))
+		log.Error().Err(err).Msg("An error occured parsing id")
 		c.JSON(http.StatusBadRequest, gin.H{"error": "incorrect song id"})
 		return
 	}
 
-	zap.L().Debug("Param bound", zap.String("id", songId))
+	log.Debug().Str("id", songId).Msg("Param bound")
 
 	request := &command.UpdateRequest{}
 	if err := c.ShouldBindJSON(&request); err != nil {
-		zap.L().Error("An error occured binding request", zap.Error(err))
+		log.Error().Err(err).Msg("An error occured binding request")
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
@@ -200,12 +201,12 @@ func (r *Router) UpdateSongHandler(c *gin.Context) {
 		Link:        request.Link,
 	})
 	if err != nil {
-		zap.L().Error("Something went wrong while updating song", zap.Error(err))
+		log.Error().Err(err).Msg("Something went wrong while updating song")
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	zap.L().Info("Request handled successfully")
+	log.Info().Msg("Request handled successfully")
 	c.Status(http.StatusOK)
 }
 
@@ -225,14 +226,15 @@ func (r *Router) CreateSongHandler(c *gin.Context) {
 
 	request := &command.CreateRequest{}
 	if err := c.ShouldBindJSON(&request); err != nil {
-		zap.L().Error("An error occured binding request", zap.Error(err))
+		log.Error().Err(err).Msg("An error occured binding request")
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	zap.L().Debug("Body bound",
-		zap.String("group", request.Group),
-		zap.String("song", request.Song))
+	log.Debug().
+		Str("group", request.Group).
+		Str("song", request.Group).
+		Msg("Body bound")
 
 	response, err := cmd.Execute(request)
 	if err != nil {
@@ -240,11 +242,11 @@ func (r *Router) CreateSongHandler(c *gin.Context) {
 		if errors.Is(err, apperror.ErrSongNotFound) {
 			status = http.StatusNotFound
 		}
-		zap.L().Error("An error occured executing command", zap.Error(err))
+		log.Error().Err(err).Msg("An error occured executing command")
 		c.JSON(status, gin.H{"error": err.Error()})
 		return
 	}
 
-	zap.L().Info("Request handled successfully")
+	log.Info().Msg("Request handled successfully")
 	c.JSON(http.StatusOK, &response)
 }

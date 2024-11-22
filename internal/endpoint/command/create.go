@@ -3,8 +3,7 @@ package command
 import (
 	"github.com/mishakrpv/musiclib/internal/domain/song"
 	"github.com/mishakrpv/musiclib/pkg/infra/musicinfo"
-
-	"go.uber.org/zap"
+	"github.com/rs/zerolog/log"
 )
 
 type CreateRequest struct {
@@ -29,23 +28,26 @@ func NewCreateCommand(repo song.Repository,
 func (h *CreateCommand) Execute(request *CreateRequest) (*CreateResponse, error) {
 	songDetail, err := h.musicinfoClient.GetSongDetail(request.Group, request.Song)
 	if err != nil {
-		zap.L().Error("An error occured getting SongDetail", zap.Error(err))
+		log.Error().Err(err).Msg("An error occured getting SongDetail")
 		return nil, err
 	}
-	zap.L().Debug("SongDetail retrieved from API successfully",
-		zap.String("link", songDetail.Link),
-		zap.String("text", songDetail.Text),
-		zap.String("releaseDate", songDetail.ReleaseDate))
+
+	log.Debug().
+		Str("link", songDetail.Link).
+		Str("text", songDetail.Text).
+		Str("releaseDate", songDetail.ReleaseDate).
+		Msg("SongDetail retrieved from API successfully")
 
 	song := song.NewSong(request.Group, request.Song,
 		songDetail.ReleaseDate, songDetail.Text, songDetail.Link)
 
 	err = h.songRepo.Create(song)
 	if err != nil {
-		zap.L().Error("An error occured creating song", zap.Error(err))
+		log.Error().Err(err).Msg("An error occured creating song")
 		return nil, err
 	}
-	zap.L().Debug("Song created successfully", zap.String("id", song.Id.String()))
+
+	log.Debug().Str("id", song.Id.String()).Msg("Song created successfully")
 
 	return &CreateResponse{Song: song}, nil
 }

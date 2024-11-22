@@ -7,7 +7,6 @@ import (
 	"github.com/mishakrpv/musiclib/internal/domain/song"
 	"github.com/mishakrpv/musiclib/pkg/config"
 	"github.com/rs/zerolog/log"
-	"go.uber.org/zap"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
@@ -21,13 +20,15 @@ func NewSongRepository(ctx context.Context, cfg *config.DBConfig) (song.Reposito
 		"host=%s user=%s password=%s dbname=%s port=%s sslmode=disable",
 		cfg.HOST, cfg.User, cfg.Pwd, cfg.Database, cfg.Port)
 
-	zap.L().Info("Postgres dsn read from configurations", zap.String("dsn", dsn))
+	log.Info().
+		Str("dsn", dsn).
+		Msg("Postgres dsn read from configurations")
 
 	db, err := gorm.Open(postgres.New(postgres.Config{
 		DSN: dsn,
 	}), &gorm.Config{})
 	if err != nil {
-		zap.L().Fatal("Cannot open database connection", zap.Error(err))
+		log.Error().Err(err).Msg("Cannot open database connection")
 		return nil, err
 	}
 
@@ -43,15 +44,21 @@ func NewSongRepository(ctx context.Context, cfg *config.DBConfig) (song.Reposito
 		}
 	}(ctx)
 
-	zap.L().Info("Database connection has been opened", zap.String("dsn", dsn))
+	log.Info().
+		Str("dsn", dsn).
+		Msg("Database connection has been opened")
 
-	zap.L().Info("Start migrating")
+	log.Info().
+		Msg("Start migrating")
+
 	err = Migrate(db)
 	if err != nil {
-		zap.L().Fatal("An error occured migrating database", zap.Error(err))
+
+		log.Error().Err(err).Msg("An error occured migrating database")
 		return nil, err
 	}
-	zap.L().Info("Db migrated")
+	log.Info().
+		Msg("Db migrated")
 
 	return &SongRepository{
 		db: db,

@@ -8,7 +8,7 @@ import (
 	"strings"
 
 	"github.com/mishakrpv/musiclib/internal/apperror"
-	"go.uber.org/zap"
+	"github.com/rs/zerolog/log"
 )
 
 type Client interface {
@@ -30,55 +30,59 @@ func NewHTTPMusicInfoClient(serviceBaseUrl string) Client {
 }
 
 func (h *HTTPClient) GetSongDetail(group string, song string) (*SongDetail, error) {
-	zap.L().Info("Creating http request", zap.String("service_base_url", h.serviceBaseUrl))
+	log.Info().Str("service_base_url", h.serviceBaseUrl).
+		Msg("Creating http request")
 
 	url := fmt.Sprintf("%s/info?group=%s&song=%s", h.serviceBaseUrl, group, song)
 	url = strings.Replace(url, " ", "+", -1)
 
-	zap.L().Debug("Info url", zap.String("url", url))
+	log.Debug().Str("url", url).Msg("Info url")
 
 	request, err := http.NewRequest(http.MethodGet,
 		url, nil)
 	if err != nil {
-		zap.L().Error("Error creating request", zap.Error(err))
+		log.Error().Err(err).Msg("Error creating request")
 		return nil, err
 	}
 
-	zap.L().Info("Request created")
+	log.Info().Msg("Request created")
 
 	client := &http.Client{}
 
 	response, err := client.Do(request)
 	if err != nil {
-		zap.L().Error("Error sending request", zap.Error(err))
+		log.Error().Err(err).Msg("Error sending request")
 		return nil, err
 	}
 	defer response.Body.Close()
 
-	zap.L().Info("Request sent")
+	log.Info().
+		Msg("Request sent")
 
 	if response.StatusCode == http.StatusNotFound {
-		zap.L().Warn("Response does not indicate success")
+		log.Warn().Msg("Response does not indicate success")
 		return nil, apperror.ErrSongNotFound
 	}
 
 	body, err := io.ReadAll(response.Body)
 	if err != nil {
-		zap.L().Error("Error reading request", zap.Error(err))
+		log.Error().Err(err).Msg("Error reading request")
 		return nil, err
 	}
 
-	zap.L().Info("Response body read")
+	log.Info().
+		Msg("Response body read")
 
 	detail := &SongDetail{}
 
 	err = json.Unmarshal(body, &detail)
 	if err != nil {
-		zap.L().Error("Error unmarshaling response body", zap.Error(err))
+		log.Error().Err(err).Msg("Error unmarshaling response body")
 		return nil, err
 	}
 
-	zap.L().Info("Response body unmarshaled")
+	log.Info().
+		Msg("Response body unmarshaled")
 
 	return detail, nil
 }

@@ -4,7 +4,7 @@
 
 ## Navigation
 
-* Application entry point, **main** package, is [here](cmd/musiclib/main.go)
+* Application entry point, **main** package, is [here](cmd/musiclib/musiclib.go)
 * Routes and server configuration are located in the [internal/server](internal/server/) directory as well as handlers
 * Music Info client is in the [internal/infrastructure/service](internal/infrastructure/service/)
 * Database connection and startup migration implementations are in the [internal/infrastructure/data/gorm](internal/infrastructure/data/gorm/)
