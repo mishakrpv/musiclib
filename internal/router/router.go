@@ -11,6 +11,7 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
+// Provides routing and handlers.
 type Router struct {
 	engine *gin.Engine
 
@@ -18,6 +19,7 @@ type Router struct {
 	songRepo        song.Repository
 }
 
+// Creates new router.
 func New(client musicinfo.Client, songRepo song.Repository) http.Handler {
 	engine := gin.New()
 
@@ -29,5 +31,5 @@ func New(client musicinfo.Client, songRepo song.Repository) http.Handler {
 		songRepo:        songRepo,
 	}
 
-	return router.RegisterRoutes()
+	return router.registerRoutes()
 }

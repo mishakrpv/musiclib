@@ -117,7 +117,7 @@ func (r *Router) LyricsHandler(c *gin.Context) {
 
 	verse, err := query.Execute(id, page)
 	if err != nil {
-		var status int = http.StatusInternalServerError
+		var status = http.StatusInternalServerError
 		if errors.Is(err, apperror.ErrVerseNotFound) || errors.Is(err, apperror.ErrSongNotFound) {
 			status = http.StatusNotFound
 		}
@@ -175,15 +175,15 @@ func (r *Router) DeleteSongHandler(c *gin.Context) {
 func (r *Router) UpdateSongHandler(c *gin.Context) {
 	log.Info().Msg("Start handling request")
 
-	songId := c.Param("song_id")
-	id, err := uuid.Parse(songId)
+	songID := c.Param("song_id")
+	id, err := uuid.Parse(songID)
 	if err != nil {
 		log.Error().Err(err).Msg("An error occured parsing id")
 		c.JSON(http.StatusBadRequest, gin.H{"error": "incorrect song id"})
 		return
 	}
 
-	log.Debug().Str("id", songId).Msg("Param bound")
+	log.Debug().Str("id", songID).Msg("Param bound")
 
 	request := &command.UpdateRequest{}
 	if err := c.ShouldBindJSON(&request); err != nil {

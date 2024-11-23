@@ -17,19 +17,22 @@ const (
 	DefaultWriteTimeout = 60 * time.Second
 )
 
+// Configuration is the static configuration.
 type Configuration struct {
 	ServerConfig *ServerConfig
 	Log          *Log
 	DBConfig     *DBConfig
 
-	MusicInfoUrl string
+	MusicInfoURL string
 }
 
+// Server configuration.
 type ServerConfig struct {
 	Port string `env:"PORT"`
 	Host string `env:"HOST"`
 }
 
+// Log settings.
 type Log struct {
 	Level   string `env:"LOG__LEVEL"`
 	Format  string `env:"LOG__FORMAT"`
@@ -42,6 +45,7 @@ type Log struct {
 	Compress   bool   `env:"LOG__COMPRESS"`
 }
 
+// Database configuration.
 type DBConfig struct {
 	Database string `env:"DB_DATABASE"`
 	Pwd      string `env:"DB_PASSWORD"`

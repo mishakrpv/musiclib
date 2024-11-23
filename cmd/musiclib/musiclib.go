@@ -66,7 +66,7 @@ func runCmd(ctx context.Context, cfg *config.Configuration) error {
 }
 
 func setupServer(ctx context.Context, cfg *config.Configuration) (*pserver.Server, error) {
-	client := musicinfo.NewHTTPMusicInfoClient(cfg.MusicInfoUrl)
+	client := musicinfo.NewHTTPMusicInfoClient(cfg.MusicInfoURL)
 
 	repo, err := db.NewSongRepository(ctx, cfg.DBConfig)
 	if err != nil {

@@ -3,6 +3,7 @@ package router
 import (
 	"net/http"
 
+	// Necessary for swagger docs gen.
 	_ "github.com/mishakrpv/musiclib/docs"
 
 	swaggerFiles "github.com/swaggo/files"
@@ -10,7 +11,7 @@ import (
 	pagination "github.com/webstradev/gin-pagination"
 )
 
-func (r *Router) RegisterRoutes() http.Handler {
+func (r *Router) registerRoutes() http.Handler {
 	r.engine.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	api := r.engine.Group("/api/v1")

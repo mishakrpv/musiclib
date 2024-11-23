@@ -20,7 +20,7 @@ func NewCmdConfiguration() *CmdConfiguration {
 			},
 			Log:          config.Load[config.Log](),
 			DBConfig:     config.Load[config.DBConfig](),
-			MusicInfoUrl: getenvOrDefault("MUSIC_INFO_URL", "http://localhost:3256"),
+			MusicInfoURL: getenvOrDefault("MUSIC_INFO_URL", "http://localhost:3256"),
 		},
 	}
 }
