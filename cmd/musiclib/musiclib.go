@@ -20,14 +20,14 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-//	@title			Musiclib API
-//	@version		1.0
-//	@description	Effective Mobile test task
+// @title			Musiclib API
+// @version			1.0
+// @description		Effective Mobile test task
 
-//	@contact.email	mishavkrpv@gmail.com
+// @contact.email	mishavkrpv@gmail.com
 
-// @host		localhost:8080
-// @BasePath	/api/v1
+// @host			localhost:8080
+// @BasePath		/api/v1
 func main() {
 	// config inits
 	config := cmd.NewCmdConfiguration()
