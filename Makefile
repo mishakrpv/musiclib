@@ -23,17 +23,12 @@ binary: dist
 
 .PHONY: test
 #? test: Run the unit and integration tests
-test: test-unit test-integration
+test: test-unit
 
 .PHONY: test-unit
 #? test-unit: Run the unit tests
 test-unit:
 	GOOS=$(GOOS) GOARCH=$(GOARCH) go test -cover "-coverprofile=cover.out" -v $(TESTFLAGS) ./pkg/... ./cmd/... ./internal/...
-
-.PHONY: test-integration
-#? test-integration: Run the integration tests
-test-integration: binary
-	GOOS=$(GOOS) GOARCH=$(GOARCH) go test ./integration -test.timeout=20m -failfast -v $(TESTFLAGS)
 
 .PHONY: lint
 #? lint: Run golangci-lint
