@@ -22,7 +22,7 @@ binary: dist
     -o "./dist/${GOOS}/${GOARCH}/$(BIN_NAME)" ./cmd/$(BIN_NAME)
 
 .PHONY: test
-#? test: Run the unit and integration tests
+#? test: Run tests
 test: test-unit
 
 .PHONY: test-unit
