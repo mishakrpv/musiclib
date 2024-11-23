@@ -4,30 +4,30 @@
 
 ## Navigation
 
-* Application entry point, **main** package, is [here](cmd/musiclib/musiclib.go)
-* Routes are located in the [internal/router](internal/router/) directory as well as handlers
-* Music Info client is in the [pkg/infra/musicinfo](pkg/infra/musicinfo/)
-* Database connection and startup migration implementations are in the [pkg/infra/db](pkg/infra/db/)
-* Request and response models for commands and queries can be found in the [internal/endpoint/command](internal/endpoint/command/) and [internal/endpoint/query](internal/endpoint/query/) respectively
-* The [mock of musicinfo](musicinfo/) contains implementation of a service for tests
+* **Entry Point**: The application's main package is located [here](cmd/musiclib/musiclib.go).
+* **Routing and Handlers**: Routes and their associated handlers can be found in the [internal/router](internal/router/) directory.
+* **Music Info Client**: The Music Info client is implemented in [pkg/infra/musicinfo](pkg/infra/musicinfo/).
+* **Database Connection & Migration**: Database connection logic and startup migrations are located in [pkg/infra/db](pkg/infra/db/).
+* **CQRS**: Request and response models for commands and queries can be found in the [internal/endpoint/command](internal/endpoint/command/) and [internal/endpoint/query](internal/endpoint/query/) directories respectively.
+* **Logging**: Logger configuration can be found in the [logger](pkg/logger/) package. To override configs in the .env file, take a look at the [config](pkg/config/) package.
 
-## Running the service
+## Running the Service
 
-Run the application from your terminal:
+To run the application, execute the following command in your terminal:
 
 ```bash
 make run
 ```
 
 > [!IMPORTANT]
-> Before starting the service, ensure that [.env file](.env) is configured properly according to your environment.
+> Before starting the service, ensure that [.env file](.env) is configured correctly according to your environment.
 > Make sure **MUSIC_INFO_URL** is specified.
 
-## Database schema
+## Database Schema
 
-There is initial [script](migrations/000001_initial.up.sql) in **migrations** directory.
+The initial database schema migration can be found in the [script](migrations/000001_initial.up.sql) file.
 
-## Additional information
+## Additional Information
 
 Swagger UI page located at `http://localhost:8080/swagger/index.html#`.
 
@@ -42,4 +42,4 @@ Go packages used:
 * **[swag](https://github.com/swaggo/swag)** v1.16.3
 * **[gorm](https://github.com/go-gorm/gorm)** v1.25.12
 
-See [go.mod file](go.mod) for more information about packages.
+For more details on dependencies, check the [go.mod file](go.mod).
